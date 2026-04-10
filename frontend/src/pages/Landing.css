@@ -103,6 +103,14 @@ body {
   width: 1.1rem;
   height: 1.1rem;
   flex-shrink: 0;
+  filter: sepia(1) saturate(8) hue-rotate(-12deg) brightness(1.2) contrast(1.25);
+}
+.nav-logo-img {
+  height: 60px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 .nav-links { 
   display: flex; 
@@ -414,6 +422,14 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+.footer-logo-img {
+  height: 100px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .footer-links {
   display: flex;
   gap: 1.5rem;
@@ -453,6 +469,7 @@ body {
   width: 0.95rem;
   height: 0.95rem;
   flex-shrink: 0;
+  filter: sepia(1) saturate(8) hue-rotate(-12deg) brightness(1.2) contrast(1.25);
 }
 
 /* ── Responsive ── */
@@ -463,4 +480,3 @@ body {
 }
 
 /* Fade-up wrapper removed in JSX; no scroll animation styles needed */
-

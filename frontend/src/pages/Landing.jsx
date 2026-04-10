@@ -1,10 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Galaxy from '../component/Galaxy';
 import BorderGlow from '../component/BorderGlow';
+import numaLogo from "../assets/numa.png";
 import './Landing.css';
 
 function BrandMark({ className = "" }) {
+  const maskId = useId();
+
   return (
     <svg
       className={className}
@@ -13,17 +16,24 @@ function BrandMark({ className = "" }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <circle cx="12" cy="12" r="2.2" fill="currentColor" />
-      <path
-        d="M4.2 12a7.8 3.6 0 1 0 15.6 0a7.8 3.6 0 1 0-15.6 0"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M12 4.2a3.6 7.8 0 1 0 0 15.6a3.6 7.8 0 1 0 0-15.6"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
+      <defs>
+        <mask id={maskId}>
+          <rect x="0" y="0" width="24" height="24" fill="#DEB64B" />
+          <circle cx="14.8" cy="10.2" r="7.2" fill="#000" />
+        </mask>
+      </defs>
+      {/* Crescent */}
+      <circle cx="10.8" cy="12.2" r="8.2" fill="currentColor" mask={`url(#${maskId})`} />
+      {/* Metallic highlight + shading (neutral overlays; tinted via CSS filter) */}
+      <circle cx="9.2" cy="8.6" r="6.4" fill="#DEB64B" opacity="0.22" mask={`url(#${maskId})`} />
+      <circle cx="12.0" cy="16.4" r="6.8" fill="#000" opacity="0.10" mask={`url(#${maskId})`} />
+
+      {/* Small stars */}
+      <g stroke="currentColor" strokeLinecap="round" strokeWidth="1.4" opacity="0.95">
+        <path d="M6.2 6.4v2.2M5.1 7.5h2.2M5.4 6.7l1.6 1.6M7 6.7L5.4 8.3" />
+        <path d="M18.1 7.2v1.8M17.2 8.1H19M17.4 7.4l1.4 1.4M18.8 7.4l-1.4 1.4" opacity="0.75" />
+        <path d="M18.4 15.8v2M17.4 16.8h2M17.6 16l1.6 1.6M19.2 16l-1.6 1.6" opacity="0.65" />
+      </g>
     </svg>
   );
 }
@@ -251,7 +261,7 @@ export default function Landing() {
     };
   }, []);
 
-  const goSignup = () => navigate("/signup");
+  const goSignup = () => navigate("/register");
 
   return (
     <div className="landing-page">
@@ -276,7 +286,7 @@ export default function Landing() {
       <nav className={`nav${scrolled ? " scrolled" : ""}`}>
         <div className="nav-logo">
           <BrandMark className="brand-mark" />
-          <span>Somnia</span>
+          <img className="nav-logo-img" src={numaLogo} alt="Numa logo" />
         </div>
         <div className="nav-links">
           {NAV_LINKS.map((l) => (
@@ -359,7 +369,7 @@ export default function Landing() {
 
       {/* ══════════════════════════════════════════ BENEFITS */}
       <section className="section" id="benefits">
-        <p className="section-label">Why Somnia</p>
+        <p className="section-label">Why Numa</p>
         <h2 className="section-title">Built Around You</h2>
         <p className="section-sub">
           Every insight is grounded in evidence — and shaped by your unique patterns, not a generic template.
@@ -426,7 +436,7 @@ export default function Landing() {
       <footer className="footer">
         <div className="footer-logo">
           <BrandMark className="brand-mark" />
-          <span>Somnia</span>
+          <img className="footer-logo-img" src={numaLogo} alt="Numa logo" />
         </div>
         <div className="footer-links">
           {["About", "Privacy", "Contact", "Blog"].map((l) => (

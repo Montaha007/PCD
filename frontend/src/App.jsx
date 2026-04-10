@@ -1,12 +1,16 @@
-import { useEffect, useState } from "react";
 import Landing from "./pages/Landing";
+import Register from "./pages/accounts/Register";
+import Login from "./pages/accounts/Login";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Landing />} />
-        {/* More routes later: /signup, /dashboard, etc. */}
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        {/* Future routes: /dashboard, etc. */}
       </Routes>
     </Router>
   );
