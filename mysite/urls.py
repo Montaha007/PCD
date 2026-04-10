@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from .views import test_api
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/test/', test_api),
+    path('api/', test_api),
+    path('api/token/', TokenObtainPairView.as_view()),       # Login → get tokens
+    path('api/token/refresh/', TokenRefreshView.as_view()),  # Refresh access token
 ]
