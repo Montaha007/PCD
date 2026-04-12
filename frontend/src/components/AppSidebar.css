@@ -1,0 +1,195 @@
+.wellness-shell {
+  --night: #060010;
+  --navy: #0a1628;
+  --blue: #191970;
+  --pink: #4682b4;
+  --cyan: #a7c7e7;
+  --teal: #0891b2;
+  --text: #e2e8f0;
+  --muted: #9bb0cc;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 500px at 90% -10%, rgba(70, 130, 180, 0.2), transparent 60%),
+    radial-gradient(900px 450px at -10% 10%, rgba(8, 145, 178, 0.2), transparent 60%),
+    linear-gradient(160deg, var(--night), var(--navy));
+  color: var(--text);
+}
+
+.wellness-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  padding: 24px 18px 20px;
+  border-right: 1px solid rgba(167, 199, 231, 0.14);
+  backdrop-filter: blur(14px);
+  background: linear-gradient(180deg, rgba(7, 15, 32, 0.8), rgba(9, 16, 36, 0.55));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.wellness-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 26px;
+}
+
+.wellness-brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: conic-gradient(from 210deg, var(--blue), var(--pink), var(--cyan), var(--teal), var(--blue));
+  box-shadow: 0 0 22px rgba(70, 130, 180, 0.45);
+}
+
+.wellness-brand-title {
+  margin: 0;
+  font-size: 1.06rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.wellness-brand-sub {
+  margin: 2px 0 0;
+  font-size: 0.74rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.wellness-nav {
+  display: grid;
+  gap: 6px;
+}
+
+.wellness-nav-item,
+.wellness-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--muted);
+  border: 1px solid transparent;
+  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.wellness-nav-item:hover,
+.wellness-profile-link:hover {
+  color: var(--text);
+  border-color: rgba(70, 130, 180, 0.45);
+  background: linear-gradient(135deg, rgba(70, 130, 180, 0.2), rgba(8, 145, 178, 0.12));
+  transform: translateX(2px);
+}
+
+.wellness-nav-item.is-active,
+.wellness-profile-link.is-active {
+  color: var(--text);
+  border-color: rgba(70, 130, 180, 0.55);
+  background: linear-gradient(135deg, rgba(70, 130, 180, 0.28), rgba(25, 25, 112, 0.26));
+}
+
+.wellness-sidebar-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(167, 199, 231, 0.3);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 10px rgba(8, 145, 178, 0.18);
+}
+
+.wellness-sidebar-icon svg {
+  width: 15px;
+  height: 15px;
+  stroke: #0b2040;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wellness-sidebar-icon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0.12) 32%, rgba(255, 255, 255, 0) 58%);
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.wellness-nav-item:hover .wellness-sidebar-icon::after,
+.wellness-profile-link:hover .wellness-sidebar-icon::after {
+  animation: icon-shine 0.9s ease;
+}
+
+.wellness-sidebar-icon--1 {
+  background: linear-gradient(145deg, #dfe9ff 0%, #b9d3ff 56%, #a7c7e7 100%);
+}
+
+.wellness-sidebar-icon--2 {
+  background: linear-gradient(145deg, #e7f4ff 0%, #c9e8ff 58%, #a7c7e7 100%);
+}
+
+.wellness-sidebar-icon--3 {
+  background: linear-gradient(145deg, #e2f8fa 0%, #b5eaf2 60%, #94dbe8 100%);
+}
+
+.wellness-sidebar-icon--4 {
+  background: linear-gradient(145deg, #f1f4ff 0%, #d6e3ff 55%, #bdd3f7 100%);
+}
+
+.wellness-sidebar-icon--5 {
+  background: linear-gradient(145deg, #efeaff 0%, #d5c7ff 60%, #b9d2ff 100%);
+}
+
+.wellness-sidebar-icon--6 {
+  background: linear-gradient(145deg, #e4fbff 0%, #c1f3ff 58%, #9be3f5 100%);
+}
+
+.wellness-sidebar-icon--7 {
+  background: linear-gradient(145deg, #e9efff 0%, #c9d8ff 58%, #b7cbef 100%);
+}
+
+.wellness-sidebar-icon--profile {
+  background: linear-gradient(145deg, #ebf5ff 0%, #d0e8ff 50%, #bde2ef 100%);
+}
+
+@keyframes icon-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.wellness-content {
+  padding: 34px 34px 46px;
+}
+
+@media (max-width: 980px) {
+  .wellness-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .wellness-sidebar {
+    position: relative;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(167, 199, 231, 0.14);
+  }
+
+  .wellness-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wellness-content {
+    padding: 24px 16px 28px;
+  }
+}
