@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Galaxy from '../../component/Galaxy';
+import SpotlightCard from '../../component/SpotlightCard';
 import './accounts.css';
 
-function MoonIcon() {
+function MoonIcon({ className = '' }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path
         d="M14.2 3.3a8.8 8.8 0 1 0 6.5 14.7A9.5 9.5 0 0 1 14.2 3.3Z"
         stroke="currentColor"
@@ -13,6 +14,74 @@ function MoonIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function IconUser({ className = '' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 12a4.2 4.2 0 1 0 0-8.4A4.2 4.2 0 0 0 12 12Z" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M4.6 20.4a7.4 7.4 0 0 1 14.8 0" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconCalendar({ className = '' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M7 3.8h10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M7 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8 11h8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconGender({ className = '' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 13.8a4.8 4.8 0 1 0 0-9.6 4.8 4.8 0 0 0 0 9.6Z" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 13.8v6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M9.5 17.2h5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconGlobe({ className = '' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M3.5 12h17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M12 3c2.6 2.6 4.1 6.1 4.1 9s-1.5 6.4-4.1 9c-2.6-2.6-4.1-6.1-4.1-9S9.4 5.6 12 3Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconMail({ className = '' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M5 7h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z" stroke="currentColor" strokeWidth="1.8" />
+      <path d="m4 9 8 6 8-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function IconLock({ className = '' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="5" y="11" width="14" height="9" rx="2" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M8.8 11V8.9a3.2 3.2 0 0 1 6.4 0V11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function IconChart({ className = '' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M4 19h17" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M7 19V11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M12 19V7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M17 19v-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
   );
 }
@@ -102,11 +171,11 @@ export default function Register() {
         />
       </div>
 
-      <div className="accounts-card">
+      <SpotlightCard className="custom-spotlight-card" spotlightColor="rgba(0, 229, 255, 0.2)">
         {/* Header */}
         <div className="accounts-header">
           <div className="accounts-logo-icon">
-            <MoonIcon />
+            <MoonIcon className="accounts-mark" />
           </div>
           <div className="accounts-eyebrow">Sleep &amp; Wellness</div>
           <h1>Create Your Account</h1>
@@ -120,7 +189,7 @@ export default function Register() {
           {/* Row: Full name + Age */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="full_name">Full Name</label>
+              <label htmlFor="full_name"><IconUser className="field-icon field-icon--rose" /> Full Name</label>
               <input
                 id="full_name"
                 type="text"
@@ -132,7 +201,7 @@ export default function Register() {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="age">Age</label>
+              <label htmlFor="age"><IconCalendar className="field-icon field-icon--lavender" /> Age</label>
               <input
                 id="age"
                 type="number"
@@ -150,7 +219,7 @@ export default function Register() {
           {/* Row: Gender + Country */}
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="gender">Gender</label>
+              <label htmlFor="gender"><IconGender className="field-icon field-icon--mint" /> Gender</label>
               <select
                 id="gender"
                 name="gender"
@@ -165,7 +234,7 @@ export default function Register() {
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="country">Country</label>
+              <label htmlFor="country"><IconGlobe className="field-icon field-icon--aqua" /> Country</label>
               <input
                 id="country"
                 type="text"
@@ -180,7 +249,7 @@ export default function Register() {
 
           {/* Email */}
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email"><IconMail className="field-icon field-icon--aqua" /> Email</label>
             <input
               id="email"
               type="email"
@@ -194,7 +263,7 @@ export default function Register() {
 
           {/* Password */}
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password"><IconLock className="field-icon field-icon--lavender" /> Password</label>
             <input
               id="password"
               type="password"
@@ -210,6 +279,7 @@ export default function Register() {
           {/* Insomnia duration */}
           <div className="form-group">
             <label htmlFor="insomnia_duration_years">
+              <IconChart className="field-icon field-icon--rose" />
               Insomnia Duration (years)
             </label>
             <input
@@ -224,19 +294,20 @@ export default function Register() {
             />
           </div>
 
-          {/* Notifications checkbox */}
-          <div className="form-check">
-            <input
-              type="checkbox"
-              id="notifications_enabled"
-              name="notifications_enabled"
-              checked={formData.notifications_enabled}
-              onChange={handleChange}
-            />
-            <label htmlFor="notifications_enabled">
-              Enable notifications
-            </label>
-          </div>
+          {/* Notifications toggle */}
+          <label className="toggle-field">
+            <span className="toggle-label">Enable notifications</span>
+            <span className="toggle-switch">
+              <input
+                type="checkbox"
+                id="notifications_enabled"
+                name="notifications_enabled"
+                checked={formData.notifications_enabled}
+                onChange={handleChange}
+              />
+              <span className="toggle-slider" aria-hidden="true" />
+            </span>
+          </label>
 
           <button type="submit" className="btn-submit" disabled={loading}>
             {loading ? 'Creating account…' : 'Create Account →'}
@@ -247,7 +318,7 @@ export default function Register() {
           Already have an account?{' '}
           <Link to="/login">Sign in</Link>
         </p>
-      </div>
+      </SpotlightCard>
     </div>
   );
 }

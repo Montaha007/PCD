@@ -2,6 +2,9 @@ import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
 import './Galaxy.css';
 
+const DEFAULT_FOCAL = Object.freeze([0.5, 0.5]);
+const DEFAULT_ROTATION = Object.freeze([1.0, 0.0]);
+
 const vertexShader = `
 attribute vec2 uv;
 attribute vec2 position;
@@ -171,8 +174,8 @@ void main() {
 `;
 
 export default function Galaxy({
-  focal = [0.5, 0.5],
-  rotation = [1.0, 0.0],
+  focal = DEFAULT_FOCAL,
+  rotation = DEFAULT_ROTATION,
   starSpeed = 0.5,
   density = 1,
   hueShift = 140,
@@ -195,6 +198,11 @@ export default function Galaxy({
   const smoothMousePos = useRef({ x: 0.5, y: 0.5 });
   const targetMouseActive = useRef(0.0);
   const smoothMouseActive = useRef(0.0);
+
+  const focalX = Number(focal?.[0] ?? 0.5);
+  const focalY = Number(focal?.[1] ?? 0.5);
+  const rotationX = Number(rotation?.[0] ?? 1.0);
+  const rotationY = Number(rotation?.[1] ?? 0.0);
 
   useEffect(() => {
     if (!ctnDom.current) return;
@@ -238,8 +246,8 @@ export default function Galaxy({
         uResolution: {
           value: new Color(gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height)
         },
-        uFocal: { value: new Float32Array(focal) },
-        uRotation: { value: new Float32Array(rotation) },
+        uFocal: { value: new Float32Array([focalX, focalY]) },
+        uRotation: { value: new Float32Array([rotationX, rotationY]) },
         uStarSpeed: { value: starSpeed },
         uDensity: { value: density },
         uHueShift: { value: hueShift },
@@ -335,8 +343,10 @@ export default function Galaxy({
     };
   }, 
   [
-    focal,
-    rotation,
+    focalX,
+    focalY,
+    rotationX,
+    rotationY,
     starSpeed,
     density,
     hueShift,

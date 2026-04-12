@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Galaxy from '../component/Galaxy';
 import BorderGlow from '../component/BorderGlow';
+import SplitText from '../component/SplitText';
 import numaLogo from "../assets/numa.png";
 import './Landing.css';
 
@@ -306,9 +307,46 @@ export default function Landing() {
           <IconMoon className="hero-eyebrow-icon" /> AI-Powered Sleep Intelligence
         </div>
         <h1 className="hero-headline">
-          Sleep Better.{" "}
-          <span>Understand Why.</span>
-          {" "}Improve Faster.
+          <SplitText
+            tag="span"
+            text="Sleep Better. "
+            delay={50}
+            duration={1.25}
+            ease="power3.out"
+            splitType="chars"
+            from={{ opacity: 0, y: 40 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.1}
+            rootMargin="-100px"
+            textAlign="center"
+          />
+          <SplitText
+            tag="span"
+            text="Understand Why."
+            className="hero-headline-accent"
+            delay={50}
+            duration={1.25}
+            ease="power3.out"
+            splitType="chars"
+            from={{ opacity: 0, y: 40 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.1}
+            rootMargin="-100px"
+            textAlign="center"
+          />
+          <SplitText
+            tag="span"
+            text=" Improve Faster."
+            delay={50}
+            duration={1.25}
+            ease="power3.out"
+            splitType="chars"
+            from={{ opacity: 0, y: 40 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.1}
+            rootMargin="-100px"
+            textAlign="center"
+          />
         </h1>
         <p className="hero-sub">
           An intelligent platform that turns your sleep, mood, and lifestyle data
