@@ -1,178 +1,426 @@
 .wellness-shell {
-  --night: #060010;
-  --navy: #0a1628;
-  --blue: #191970;
+  --night: #040010;
+  --navy: #080f22;
+  --blue: #1a1f6e;
   --pink: #4682b4;
   --cyan: #a7c7e7;
   --teal: #0891b2;
-  --text: #e2e8f0;
-  --muted: #9bb0cc;
+  --text: #e8eef8;
+  --muted: #8fa8c8;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: auto 1fr;
   min-height: 100vh;
   background:
-    radial-gradient(1200px 500px at 90% -10%, rgba(70, 130, 180, 0.2), transparent 60%),
-    radial-gradient(900px 450px at -10% 10%, rgba(8, 145, 178, 0.2), transparent 60%),
+    radial-gradient(1200px 500px at 90% -10%, rgba(70, 130, 180, 0.18), transparent 60%),
+    radial-gradient(900px 450px at -10% 10%, rgba(8, 145, 178, 0.18), transparent 60%),
     linear-gradient(160deg, var(--night), var(--navy));
   color: var(--text);
 }
 
+/* ─── Sidebar shell ─────────────────────────────────────────────────── */
 .wellness-sidebar {
   position: sticky;
   top: 0;
+  width: 272px;
   height: 100vh;
-  padding: 24px 18px 20px;
-  border-right: 1px solid rgba(167, 199, 231, 0.14);
-  backdrop-filter: blur(14px);
-  background: linear-gradient(180deg, rgba(7, 15, 32, 0.8), rgba(9, 16, 36, 0.55));
+  padding: 20px 14px 18px;
+  border-right: 1px solid rgba(100, 160, 255, 0.12);
+  backdrop-filter: blur(28px) saturate(140%);
+  background:
+    radial-gradient(260px 260px at 110% 95%, rgba(8, 145, 178, 0.14), transparent 70%),
+    radial-gradient(220px 180px at -20% 8%, rgba(100, 140, 220, 0.13), transparent 65%),
+    linear-gradient(175deg, rgba(6, 10, 26, 0.92), rgba(8, 14, 32, 0.78));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset -1px 0 0 rgba(255, 255, 255, 0.04),
+    10px 0 40px rgba(4, 0, 16, 0.45);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
+  transition: width 0.38s cubic-bezier(0.22, 1, 0.36, 1), padding 0.3s ease;
+  z-index: 10;
+}
+
+/* top-right corner glint */
+.wellness-sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0; right: 0;
+  width: 70%; height: 40%;
+  background: radial-gradient(ellipse at 100% 0%, rgba(100, 160, 255, 0.1), transparent 65%);
+  pointer-events: none;
+}
+
+/* bottom floating orb */
+.wellness-sidebar::after {
+  content: "";
+  position: absolute;
+  bottom: -60px; left: 50%;
+  translate: -50% 0;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(30, 80, 180, 0.18), transparent 70%);
+  pointer-events: none;
+  filter: blur(6px);
+}
+
+.wellness-sidebar.is-collapsed {
+  width: 86px;
+  padding: 20px 10px 16px;
+}
+
+/* ─── Brand ──────────────────────────────────────────────────────────── */
+.wellness-sidebar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 22px;
 }
 
 .wellness-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 26px;
+  gap: 11px;
+  min-width: 0;
 }
 
 .wellness-brand-mark {
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  background: conic-gradient(from 210deg, var(--blue), var(--pink), var(--cyan), var(--teal), var(--blue));
-  box-shadow: 0 0 22px rgba(70, 130, 180, 0.45);
+  background: conic-gradient(from 210deg, #1a2580, #4682b4, #a7c7e7, #0891b2, #1a2580);
+  box-shadow:
+    0 0 0 1px rgba(167, 199, 231, 0.3),
+    0 0 18px rgba(70, 130, 180, 0.55),
+    0 0 36px rgba(8, 145, 178, 0.2);
+  animation: brand-pulse 4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes brand-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(167,199,231,.3), 0 0 18px rgba(70,130,180,.55), 0 0 36px rgba(8,145,178,.2); }
+  50%       { box-shadow: 0 0 0 1px rgba(167,199,231,.45), 0 0 26px rgba(70,130,180,.75), 0 0 52px rgba(8,145,178,.3); }
+}
+
+.wellness-brand-copy {
+  min-width: 0;
+  transition: opacity 0.24s ease, transform 0.24s ease, max-width 0.24s ease;
 }
 
 .wellness-brand-title {
   margin: 0;
-  font-size: 1.06rem;
+  font-size: 1.08rem;
   font-weight: 700;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
+  background: linear-gradient(120deg, #e8f0ff, #a7c7e7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .wellness-brand-sub {
   margin: 2px 0 0;
-  font-size: 0.74rem;
+  font-size: 0.68rem;
   color: var(--muted);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  opacity: 0.75;
 }
 
+/* ─── Toggle button ───────────────────────────────────────────────────── */
+.wellness-sidebar-toggle {
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  border: 1px solid rgba(100, 160, 255, 0.22);
+  background: rgba(30, 50, 100, 0.3);
+  color: #c5d8f5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wellness-sidebar-toggle:hover {
+  border-color: rgba(100, 160, 255, 0.5);
+  background: rgba(50, 90, 160, 0.35);
+  box-shadow: 0 0 12px rgba(70, 130, 180, 0.25);
+}
+
+.wellness-sidebar-toggle:focus-visible {
+  outline: 2px solid rgba(167, 199, 231, 0.7);
+  outline-offset: 2px;
+}
+
+.wellness-sidebar-toggle-icon {
+  width: 13px;
+  height: 13px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.wellness-sidebar-toggle-icon.is-collapsed {
+  transform: rotate(180deg);
+}
+
+/* ─── Section label ───────────────────────────────────────────────────── */
+.wellness-nav-section-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(130, 160, 210, 0.5);
+  padding: 0 4px 6px;
+  transition: opacity 0.24s ease, max-height 0.24s ease;
+  overflow: hidden;
+  max-height: 24px;
+}
+
+.wellness-sidebar.is-collapsed .wellness-nav-section-label {
+  opacity: 0;
+  max-height: 0;
+  padding-bottom: 0;
+}
+
+/* ─── Nav ─────────────────────────────────────────────────────────────── */
 .wellness-nav {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 
 .wellness-nav-item,
-.wellness-profile-link {
+.wellness-profile-link,
+.wellness-signout-btn {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 13px;
   text-decoration: none;
   color: var(--muted);
   border: 1px solid transparent;
-  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  overflow: hidden;
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.22s ease,
+    color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease,
+    padding 0.28s ease;
 }
 
+.wellness-signout-btn {
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+/* Hover */
 .wellness-nav-item:hover,
-.wellness-profile-link:hover {
-  color: var(--text);
-  border-color: rgba(70, 130, 180, 0.45);
-  background: linear-gradient(135deg, rgba(70, 130, 180, 0.2), rgba(8, 145, 178, 0.12));
-  transform: translateX(2px);
+.wellness-profile-link:hover,
+.wellness-signout-btn:hover {
+  color: #d8e8ff;
+  border-color: rgba(80, 140, 220, 0.38);
+  background: linear-gradient(135deg, rgba(60, 110, 200, 0.18), rgba(8, 145, 178, 0.1));
+  transform: translateX(3px);
+  box-shadow: 0 4px 18px rgba(40, 100, 200, 0.14);
 }
 
+/* Active */
 .wellness-nav-item.is-active,
 .wellness-profile-link.is-active {
-  color: var(--text);
-  border-color: rgba(70, 130, 180, 0.55);
-  background: linear-gradient(135deg, rgba(70, 130, 180, 0.28), rgba(25, 25, 112, 0.26));
+  color: #eef4ff;
+  border-color: rgba(80, 150, 240, 0.45);
+  background: linear-gradient(135deg, rgba(55, 110, 210, 0.32), rgba(20, 30, 100, 0.28));
+  /* left accent glow bar */
+  box-shadow:
+    inset 3px 0 0 #64aaff,
+    0 6px 24px rgba(50, 110, 220, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
+.wellness-nav-item.is-active .wellness-nav-label,
+.wellness-profile-link.is-active .wellness-nav-label {
+  font-weight: 600;
+}
+
+/* Active icon glow boost */
+.wellness-nav-item.is-active .wellness-sidebar-icon,
+.wellness-profile-link.is-active .wellness-sidebar-icon {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 0 14px rgba(100, 170, 255, 0.45),
+    0 4px 10px rgba(8, 145, 178, 0.25);
+}
+
+.wellness-signout-btn:focus-visible {
+  outline: 2px solid rgba(167, 199, 231, 0.75);
+  outline-offset: 2px;
+}
+
+/* ─── Icons ───────────────────────────────────────────────────────────── */
 .wellness-sidebar-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 9px;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(167, 199, 231, 0.3);
+  border: 1px solid rgba(167, 199, 231, 0.28);
   position: relative;
   overflow: hidden;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 4px 10px rgba(8, 145, 178, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38), 0 4px 10px rgba(8, 145, 178, 0.16);
+  flex-shrink: 0;
+  transition: box-shadow 0.22s ease, transform 0.22s ease;
 }
 
 .wellness-sidebar-icon svg {
   width: 15px;
   height: 15px;
-  stroke: #0b2040;
-  stroke-width: 1.9;
+  stroke: #0a1e3c;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
+/* Shine sweep */
 .wellness-sidebar-icon::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.48) 0%, rgba(255, 255, 255, 0.12) 32%, rgba(255, 255, 255, 0) 58%);
-  transform: translateX(-100%);
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.14) 36%, rgba(255, 255, 255, 0) 60%);
+  transform: translateX(-110%);
   pointer-events: none;
 }
 
 .wellness-nav-item:hover .wellness-sidebar-icon::after,
-.wellness-profile-link:hover .wellness-sidebar-icon::after {
-  animation: icon-shine 0.9s ease;
+.wellness-profile-link:hover .wellness-sidebar-icon::after,
+.wellness-signout-btn:hover .wellness-sidebar-icon::after {
+  animation: icon-shine 0.75s ease;
 }
 
+.wellness-nav-item:hover .wellness-sidebar-icon {
+  transform: scale(1.06);
+}
+
+/* Icon color tokens */
 .wellness-sidebar-icon--1 {
-  background: linear-gradient(145deg, #dfe9ff 0%, #b9d3ff 56%, #a7c7e7 100%);
+  background: linear-gradient(145deg, #dce8ff, #b4ceff, #9abde8);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(140,180,255,.3);
 }
-
 .wellness-sidebar-icon--2 {
-  background: linear-gradient(145deg, #e7f4ff 0%, #c9e8ff 58%, #a7c7e7 100%);
+  background: linear-gradient(145deg, #ddf0ff, #b2dcff, #90c8f0);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(100,190,255,.3);
 }
-
 .wellness-sidebar-icon--3 {
-  background: linear-gradient(145deg, #e2f8fa 0%, #b5eaf2 60%, #94dbe8 100%);
+  background: linear-gradient(145deg, #d8f8f8, #a4e8f2, #7dd4e8);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(60,210,230,.28);
 }
-
 .wellness-sidebar-icon--4 {
-  background: linear-gradient(145deg, #f1f4ff 0%, #d6e3ff 55%, #bdd3f7 100%);
+  background: linear-gradient(145deg, #eaeeff, #ccd6ff, #adc0f5);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(130,150,255,.28);
 }
-
 .wellness-sidebar-icon--5 {
-  background: linear-gradient(145deg, #efeaff 0%, #d5c7ff 60%, #b9d2ff 100%);
+  background: linear-gradient(145deg, #ece6ff, #cdb8ff, #b0a0ef);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(160,120,255,.28);
 }
-
 .wellness-sidebar-icon--6 {
-  background: linear-gradient(145deg, #e4fbff 0%, #c1f3ff 58%, #9be3f5 100%);
+  background: linear-gradient(145deg, #d8f8ff, #a6eeff, #78dcf5);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(40,210,245,.28);
 }
-
 .wellness-sidebar-icon--7 {
-  background: linear-gradient(145deg, #e9efff 0%, #c9d8ff 58%, #b7cbef 100%);
+  background: linear-gradient(145deg, #dce6ff, #b8ccff, #9ab8ec);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(100,160,240,.28);
 }
-
 .wellness-sidebar-icon--profile {
-  background: linear-gradient(145deg, #ebf5ff 0%, #d0e8ff 50%, #bde2ef 100%);
+  background: linear-gradient(145deg, #e4f0ff, #c4deff, #a8d2f0);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 0 10px rgba(80,160,230,.28);
 }
 
-@keyframes icon-shine {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(120%);
-  }
+/* ─── Nav label ───────────────────────────────────────────────────────── */
+.wellness-nav-label {
+  font-size: 0.875rem;
+  white-space: nowrap;
+  transform-origin: left center;
+  transition: opacity 0.24s ease, transform 0.24s ease, max-width 0.24s ease;
+  max-width: 180px;
 }
 
+/* ─── Collapsed state ─────────────────────────────────────────────────── */
+.wellness-sidebar.is-collapsed .wellness-brand-copy,
+.wellness-sidebar.is-collapsed .wellness-nav-label {
+  opacity: 0;
+  transform: translateX(-8px);
+  max-width: 0;
+  pointer-events: none;
+}
+
+.wellness-sidebar.is-collapsed .wellness-nav-item,
+.wellness-sidebar.is-collapsed .wellness-profile-link,
+.wellness-sidebar.is-collapsed .wellness-signout-btn {
+  justify-content: center;
+  padding: 10px;
+}
+
+/* ─── Footer ──────────────────────────────────────────────────────────── */
+.wellness-sidebar-footer {
+  display: grid;
+  gap: 6px;
+  padding-top: 14px;
+  position: relative;
+}
+
+.wellness-sidebar-footer::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 8px; right: 8px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(100, 160, 255, 0.3), rgba(8, 145, 178, 0.25), transparent);
+}
+
+/* ─── Entry animations ────────────────────────────────────────────────── */
+.wellness-sidebar:not(.is-collapsed) .wellness-nav-item,
+.wellness-sidebar:not(.is-collapsed) .wellness-profile-link,
+.wellness-sidebar:not(.is-collapsed) .wellness-signout-btn {
+  animation: nav-fade-in 0.32s ease both;
+}
+
+.wellness-sidebar:not(.is-collapsed) .wellness-nav-item:nth-child(1) { animation-delay: 20ms; }
+.wellness-sidebar:not(.is-collapsed) .wellness-nav-item:nth-child(2) { animation-delay: 45ms; }
+.wellness-sidebar:not(.is-collapsed) .wellness-nav-item:nth-child(3) { animation-delay: 70ms; }
+.wellness-sidebar:not(.is-collapsed) .wellness-nav-item:nth-child(4) { animation-delay: 95ms; }
+.wellness-sidebar:not(.is-collapsed) .wellness-nav-item:nth-child(5) { animation-delay: 120ms; }
+.wellness-sidebar:not(.is-collapsed) .wellness-nav-item:nth-child(6) { animation-delay: 145ms; }
+.wellness-sidebar:not(.is-collapsed) .wellness-nav-item:nth-child(7) { animation-delay: 170ms; }
+.wellness-sidebar:not(.is-collapsed) .wellness-sidebar-footer .wellness-profile-link { animation-delay: 195ms; }
+.wellness-sidebar:not(.is-collapsed) .wellness-sidebar-footer .wellness-signout-btn { animation-delay: 215ms; }
+
+/* ─── Content area ────────────────────────────────────────────────────── */
 .wellness-content {
   padding: 34px 34px 46px;
 }
 
+/* ─── Keyframes ───────────────────────────────────────────────────────── */
+@keyframes icon-shine {
+  0%   { transform: translateX(-110%); }
+  100% { transform: translateX(120%); }
+}
+
+@keyframes nav-fade-in {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────────── */
 @media (max-width: 980px) {
   .wellness-shell {
     grid-template-columns: 1fr;
@@ -181,8 +429,32 @@
   .wellness-sidebar {
     position: relative;
     height: auto;
+    width: 100%;
     border-right: none;
-    border-bottom: 1px solid rgba(167, 199, 231, 0.14);
+    border-bottom: 1px solid rgba(100, 160, 255, 0.1);
+  }
+
+  .wellness-sidebar.is-collapsed {
+    width: 100%;
+  }
+
+  .wellness-sidebar-toggle {
+    display: none;
+  }
+
+  .wellness-sidebar.is-collapsed .wellness-brand-copy,
+  .wellness-sidebar.is-collapsed .wellness-nav-label {
+    opacity: 1;
+    transform: none;
+    max-width: 180px;
+    pointer-events: auto;
+  }
+
+  .wellness-sidebar.is-collapsed .wellness-nav-item,
+  .wellness-sidebar.is-collapsed .wellness-profile-link,
+  .wellness-sidebar.is-collapsed .wellness-signout-btn {
+    justify-content: flex-start;
+    padding: 10px 12px;
   }
 
   .wellness-nav {

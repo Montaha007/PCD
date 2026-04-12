@@ -1,5 +1,5 @@
 import AppSidebar from "../components/AppSidebar";
-import "./Profile.css";
+import "./profile/Profile.css";
 
 export default function AppSection({ title, description }) {
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import AppSidebar from "../components/AppSidebar";
+import AppSidebar from "../../components/AppSidebar";
 import "./Profile.css";
 
 const API_BASE = "http://localhost:8000";

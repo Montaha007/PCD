@@ -1,5 +1,9 @@
-import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./AppSidebar.css";
+
+const API_BASE = "http://localhost:8000";
+const SIDEBAR_STATE_KEY = "wellness_sidebar_collapsed";
 
 const NAV_ITEMS = [
   { label: "Dashboard", path: "/dashboard", icon: "dashboard", tone: "1" },
@@ -91,6 +95,18 @@ function SidebarIcon({ name, tone }) {
     );
   }
 
+  if (name === "logout") {
+    return (
+      <span className={className} aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M10 4H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" />
+          <path d="M14.5 8.5 19 12l-4.5 3.5" />
+          <path d="M19 12H10" />
+        </svg>
+      </span>
+    );
+  }
+
   return (
     <span className={className} aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none">
@@ -102,18 +118,80 @@ function SidebarIcon({ name, tone }) {
 }
 
 export default function AppSidebar() {
+  const navigate = useNavigate();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const savedState = localStorage.getItem(SIDEBAR_STATE_KEY);
+    if (savedState === "1") {
+      setIsCollapsed(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_STATE_KEY, isCollapsed ? "1" : "0");
+  }, [isCollapsed]);
+
+  const toggleSidebar = () => {
+    setIsCollapsed((prev) => !prev);
+  };
+
+  const handleSignOut = async () => {
+    const accessToken = localStorage.getItem("access_token");
+    const refreshToken = localStorage.getItem("refresh_token");
+
+    try {
+      if (accessToken && refreshToken) {
+        await fetch(`${API_BASE}/accounts/api/logout/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ refresh: refreshToken }),
+        });
+      }
+    } catch {
+      // Sign out should still proceed locally if server call fails.
+    }
+
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    navigate("/login", { replace: true });
+  };
+
   return (
-    <aside className="wellness-sidebar" aria-label="Main sidebar">
+    <aside className={`wellness-sidebar${isCollapsed ? " is-collapsed" : ""}`} aria-label="Main sidebar">
       <div>
-        <div className="wellness-brand">
-          <div className="wellness-brand-mark" aria-hidden="true" />
-          <div>
-            <p className="wellness-brand-title">Numa</p>
-            <p className="wellness-brand-sub">Sleep Companion</p>
+        <div className="wellness-sidebar-top">
+          <div className="wellness-brand">
+            <div className="wellness-brand-mark" aria-hidden="true" />
+            <div className="wellness-brand-copy">
+              <p className="wellness-brand-title">Numa</p>
+              <p className="wellness-brand-sub">Sleep Companion</p>
+            </div>
           </div>
+
+          <button
+            type="button"
+            className="wellness-sidebar-toggle"
+            onClick={toggleSidebar}
+            aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!isCollapsed}
+          >
+            <svg
+              className={`wellness-sidebar-toggle-icon${isCollapsed ? " is-collapsed" : ""}`}
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M14 6 8 12l6 6" />
+            </svg>
+          </button>
         </div>
 
         <nav className="wellness-nav" aria-label="Primary navigation">
+          <span className="wellness-nav-section-label" aria-hidden="true">Navigation</span>
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.path}
@@ -122,23 +200,37 @@ export default function AppSidebar() {
                 `wellness-nav-item${isActive ? " is-active" : ""}`
               }
               end={item.path === "/dashboard"}
+              title={isCollapsed ? item.label : undefined}
             >
               <SidebarIcon name={item.icon} tone={item.tone} />
-              <span>{item.label}</span>
+              <span className="wellness-nav-label">{item.label}</span>
             </NavLink>
           ))}
         </nav>
       </div>
 
-      <NavLink
-        to="/profile"
-        className={({ isActive }) =>
-          `wellness-profile-link${isActive ? " is-active" : ""}`
-        }
-      >
-        <SidebarIcon name="profile" tone="profile" />
-        <span>Profile</span>
-      </NavLink>
+      <div className="wellness-sidebar-footer">
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            `wellness-profile-link${isActive ? " is-active" : ""}`
+          }
+          title={isCollapsed ? "Profile" : undefined}
+        >
+          <SidebarIcon name="profile" tone="profile" />
+          <span className="wellness-nav-label">Profile</span>
+        </NavLink>
+
+        <button
+          type="button"
+          className="wellness-signout-btn"
+          onClick={handleSignOut}
+          title={isCollapsed ? "Sign out" : undefined}
+        >
+          <SidebarIcon name="logout" tone="6" />
+          <span className="wellness-nav-label">Sign out</span>
+        </button>
+      </div>
     </aside>
   );
 }

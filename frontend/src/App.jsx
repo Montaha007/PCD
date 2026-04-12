@@ -1,12 +1,28 @@
 import Landing from "./pages/Landing";
 import Register from "./pages/accounts/Register";
 import Login from "./pages/accounts/Login";
-import Profile from "./pages/Profile";
+import Profile from "./pages/profile/Profile";
 import AppSection from "./pages/AppSection";
+import SleepLog from "./pages/SleepLog";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { UserDataProvider } from "./context/UserDataContext";
+import { Toaster } from "sonner";
 
 function App() {
   return (
+    <UserDataProvider>
+    <Toaster
+      theme="dark"
+      position="bottom-right"
+      toastOptions={{
+        style: {
+          background: 'linear-gradient(160deg, rgba(8,14,38,0.96), rgba(6,12,28,0.92))',
+          border: '1px solid rgba(100,160,255,0.2)',
+          color: '#e8eef8',
+          backdropFilter: 'blur(20px)',
+        },
+      }}
+    />
     <Router>
       <Routes>
         <Route path="/" element={<Landing />} />
@@ -21,15 +37,7 @@ function App() {
             />
           }
         />
-        <Route
-          path="/sleep-log"
-          element={
-            <AppSection
-              title="Sleep Log"
-              description="Track bedtime, wake time, sleep quality, and key notes for each night."
-            />
-          }
-        />
+        <Route path="/sleep-log" element={<SleepLog />} />
         <Route
           path="/lifestyle"
           element={
@@ -78,6 +86,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
+    </UserDataProvider>
   );
 }
 
