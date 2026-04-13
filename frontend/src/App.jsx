@@ -3,7 +3,7 @@ import Register from "./pages/accounts/Register";
 import Login from "./pages/accounts/Login";
 import Profile from "./pages/profile/Profile";
 import AppSection from "./pages/AppSection";
-import SleepLog from "./pages/SleepLog";
+import SleepLog from "./pages/sleeplog/SleepLog";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserDataProvider } from "./context/UserDataContext";
 import { Toaster } from "sonner";
