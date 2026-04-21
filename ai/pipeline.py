@@ -10,11 +10,23 @@ Order of operations
 4. search()                        → top-5 similar cases + majority vote.
 5. StandardScale (scaler.pkl)      → feed into best_insomnia_model.pkl.
 6. Return unified result dict.
+──────────────────────────────────────────────────────────────────────────────
+MODIFICATION LOG:
+  • All code above the "NEW ADDITION" marker is your existing pipeline.
+    Left as a placeholder — paste yours back verbatim.
+  • graphrag_answer() is NEW.
+ 
+graphrag_answer() mirrors the graphrag_answer() function from
+neo4j-graphrag_5_.ipynb §16, adapted for Django:
+  - Calls hybrid_retrieve() from retriever.py
+  - Calls Groq llama-3.1-8b-instant with the clinical system prompt
+  - Returns { predicted_label, confidence, analysis_text }
 """
 from __future__ import annotations
 
 import numpy as np
-
+from .client import get_groq_client
+from .retriever import hybrid_retrieve
 from .registry import get_kit
 from .embedder import build_vector
 from .retriever import search
@@ -121,3 +133,72 @@ def run_sleep_pipeline(sleep_log) -> dict:
         "signals_conflict":  model_label != qdrant_label,
         "top_similar_cases": hits,
     }
+ 
+# Clinical system prompt — taken verbatim from neo4j-graphrag_5_.ipynb §16
+_SYSTEM_PROMPT = (
+    "You are a clinical mental health assistant. "
+    "You will be given a user query and context retrieved from a knowledge base "
+    "that includes both semantic text chunks and a knowledge graph.\n\n"
+    "Use ONLY the provided context to answer. Be empathetic, precise, and clinical. "
+    "Do not invent information not present in the context. "
+    "Always mention which mental health condition the context is most associated with."
+)
+ 
+_MODEL = "llama-3.1-8b-instant"
+_MAX_TOKENS = 400
+_TEMPERATURE = 0.2
+ 
+ 
+def graphrag_answer(text: str, k: int = 10) -> dict:
+    """
+    Full GraphRAG pipeline for a single cleaned journal text.
+ 
+    Workflow:
+      1. hybrid_retrieve()  — Qdrant semantic search + Neo4j graph traversal
+      2. Groq llama-3.1-8b-instant  — grounded clinical analysis
+ 
+    Args:
+        text: Pre-cleaned journal text (JournalPreprocessor().clean() output).
+        k:    Number of Qdrant chunks to retrieve.
+ 
+    Returns:
+        {
+          "predicted_label": str,   e.g. "anxiety", "depression", "normal"
+          "confidence":      float, hybrid vote score (0–1)
+          "analysis_text":   str,   LLM clinical analysis paragraph
+        }
+ 
+    Raises:
+        Exception: Propagates Qdrant / Neo4j / Groq errors to the caller
+                   (services.py / views.py should handle them).
+    """
+    # Step 1 — Retrieve hybrid context (Qdrant + Neo4j)
+    retrieval: dict = hybrid_retrieve(text, k=k)
+ 
+    # Step 2 — Build LLM prompt (same structure as notebook §16)
+    user_prompt = (
+        f"User Query: {text}\n\n"
+        f"Retrieved Context:\n{retrieval['merged_context']}\n\n"
+        "Based on the above context, answer the query."
+    )
+ 
+    # Step 3 — Call Groq
+    groq = get_groq_client()
+    response = groq.chat.completions.create(
+        model=_MODEL,
+        messages=[
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user",   "content": user_prompt},
+        ],
+        temperature=_TEMPERATURE,
+        max_tokens=_MAX_TOKENS,
+    )
+ 
+    analysis_text: str = response.choices[0].message.content.strip()
+ 
+    return {
+        "predicted_label": retrieval["predicted_label"],
+        "confidence":      retrieval["confidence"],
+        "analysis_text":   analysis_text,
+    }
+ 

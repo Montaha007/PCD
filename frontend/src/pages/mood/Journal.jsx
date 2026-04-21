@@ -46,13 +46,13 @@ export default function Journal() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content.trim()) {
-      toast.error('Veuillez écrire quelque chose dans votre journal');
+      toast.error('Please write something in your journal.');
       return;
     }
 
     const token = getToken();
     if (!token) {
-      toast.error('Session expirée. Veuillez vous reconnecter.');
+      toast.error('Session expired. Please log in again.');
       return;
     }
 
@@ -69,16 +69,16 @@ export default function Journal() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        const msg = Object.values(err).flat().join(' ') || "Impossible d'enregistrer l'entrée.";
+        const msg = Object.values(err).flat().join(' ') || 'Could not save journal entry.';
         toast.error(msg);
         return;
       }
 
-      toast.success('Entrée de journal enregistrée avec succès!');
+      toast.success('Journal entry saved successfully!');
       setContent('');
       fetchEntries();
     } catch {
-      toast.error('Impossible de contacter le serveur.');
+      toast.error('Could not reach the server.');
     } finally {
       setSubmitting(false);
     }
@@ -95,10 +95,10 @@ export default function Journal() {
           <div className="journal-header" style={{ marginTop: '28px' }}>
             <h1 className="journal-title">
               <BookOpen size={30} strokeWidth={1.8} />
-              Journal Émotionnel
+              Emotional Journal
             </h1>
             <p className="journal-sub">
-              Exprimez vos pensées, émotions et réflexions quotidiennes
+              Express your thoughts, emotions, and daily reflections
             </p>
           </div>
 
@@ -111,7 +111,7 @@ export default function Journal() {
               <form onSubmit={handleSubmit} className="journal-form">
                 <div className="journal-label-row">
                   <Sparkles size={18} strokeWidth={1.8} className="journal-icon-primary" />
-                  <Label>Comment vous sentez-vous aujourd'hui ?</Label>
+                  <Label>How are you feeling today?</Label>
                 </div>
 
                 <div className="journal-textarea-wrap">
@@ -127,7 +127,7 @@ export default function Journal() {
                     onChange={(e) => setContent(e.target.value)}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    placeholder="Écrivez librement vos pensées, émotions, préoccupations ou ce qui vous a marqué aujourd'hui… L'IA analysera le sentiment de votre texte pour vous aider à mieux comprendre votre état émotionnel."
+                    placeholder="Write freely about your thoughts, emotions, concerns, or what stood out to you today... AI will analyze your text sentiment to help you better understand your emotional state."
                     className="journal-textarea"
                     style={{
                       background: isFocused
@@ -139,7 +139,7 @@ export default function Journal() {
 
                 <div className="journal-hint-row">
                   <Sparkles size={14} strokeWidth={1.8} className="journal-icon-primary" />
-                  <span>L'IA analysera automatiquement le sentiment de votre texte</span>
+                  <span>AI will automatically analyze your text sentiment</span>
                 </div>
 
                 <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
@@ -148,7 +148,7 @@ export default function Journal() {
                       ? <Loader2 size={18} className="journal-spin" />
                       : <Send size={18} strokeWidth={1.8} />
                     }
-                    {submitting ? 'Enregistrement…' : "Enregistrer l'entrée"}
+                    {submitting ? 'Saving...' : 'Save Entry'}
                   </Button>
                 </motion.div>
               </form>
@@ -159,11 +159,11 @@ export default function Journal() {
           {loadingEntries ? (
             <div className="journal-loading">
               <Loader2 size={20} className="journal-spin" />
-              <span>Chargement des entrées…</span>
+              <span>Loading entries...</span>
             </div>
           ) : entries.length > 0 && (
             <div className="journal-entries-section">
-              <h2 className="journal-entries-title">Entrées précédentes</h2>
+              <h2 className="journal-entries-title">Previous Entries</h2>
               <AnimatePresence>
                 {entries.map((entry, index) => (
                   <motion.div
@@ -176,7 +176,7 @@ export default function Journal() {
                       <div className="journal-entry-meta">
                         <BookOpen size={14} strokeWidth={1.8} className="journal-icon-accent" />
                         <span>
-                          {new Date(entry.created_at).toLocaleDateString('fr-FR', {
+                          {new Date(entry.created_at).toLocaleDateString('en-US', {
                             weekday: 'long',
                             year: 'numeric',
                             month: 'long',
@@ -189,7 +189,7 @@ export default function Journal() {
                           <span className="journal-mood-badge">{entry.predicted_mood}</span>
                         )}
                         {entry.status === 'PENDING' && (
-                          <span className="journal-status-badge pending">En attente d'analyse</span>
+                          <span className="journal-status-badge pending">Analysis pending</span>
                         )}
                       </div>
                       <p className="journal-entry-content">{entry.content}</p>

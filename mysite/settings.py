@@ -153,6 +153,17 @@ QDRANT_COLLECTIONS = {
     #"mood":    os.environ.get("QDRANT_MOOD_COLLECTION",    "mood_logs"),
 }
 
+# ── Neo4j ─────────────────────────────────────────────────────────────────────
+NEO4J_URI      = os.environ.get("NEO4J_URI", "")
+NEO4J_USERNAME = os.environ.get("NEO4J_USERNAME", "neo4j")
+NEO4J_PASSWORD = os.environ.get("NEO4J_PASSWORD", "")
+
+# ── Groq ──────────────────────────────────────────────────────────────────────
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
+
+# ── HuggingFace Inference API (all-MiniLM-L6-v2 embeddings — remote, no local model) ─
+HF_API_KEY = os.environ.get("HF_API_KEY", "")
+
 from datetime import timedelta
 
 SIMPLE_JWT = {

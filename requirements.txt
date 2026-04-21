@@ -5,6 +5,9 @@ pandas
 scikit-learn
 qdrant-client
 python-dotenv
+neo4j==6.1.0
+groq==1.2.0
+huggingface_hub
 Django==5.1.15
 django-cors-headers==4.9.0
 djangorestframework==3.17.1
