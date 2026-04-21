@@ -4,6 +4,7 @@ import Login from "./pages/accounts/Login";
 import Profile from "./pages/profile/Profile";
 import AppSection from "./pages/AppSection";
 import SleepLog from "./pages/sleeplog/SleepLog";
+import Journal from "./pages/mood/Journal";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserDataProvider } from "./context/UserDataContext";
 import { Toaster } from "sonner";
@@ -47,15 +48,7 @@ function App() {
             />
           }
         />
-        <Route
-          path="/journal"
-          element={
-            <AppSection
-              title="Journal"
-              description="Store your mood, thoughts, and emotional patterns alongside sleep data."
-            />
-          }
-        />
+        <Route path="/journal" element={<Journal />} />
         <Route
           path="/routine-optimizer"
           element={

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import AppSidebar from "../../components/AppSidebar";
+import FloatingStars from "../../components/FloatingStars";
 import "./Profile.css";
 
 const API_BASE = "http://localhost:8000";
@@ -139,6 +140,7 @@ export default function Profile() {
 
   return (
     <div className="wellness-shell">
+      <FloatingStars />
       <AppSidebar />
 
       <main className="wellness-content">

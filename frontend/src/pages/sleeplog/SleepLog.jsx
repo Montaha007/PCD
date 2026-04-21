@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import { GlassCard } from '../components/GlassCard';
-import { OnboardingProgress } from '../components/OnboardingProgress';
-import { Label } from '../components/ui/label';
-import { Button } from '../components/ui/button';
-import { Switch } from '../components/ui/switch';
+import { GlassCard } from '../../components/GlassCard';
+import { OnboardingProgress } from '../../components/OnboardingProgress';
+import { Label } from '../../components/ui/label';
+import { Button } from '../../components/ui/button';
+import { Switch } from '../../components/ui/switch';
 import { Moon, Clock, Star, AlertCircle, Check, Timer, CalendarClock } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
-import AppSidebar from '../components/AppSidebar';
+import AppSidebar from '../../components/AppSidebar';
+import FloatingStars from '../../components/FloatingStars';
 import './SleepLog.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
@@ -38,6 +39,8 @@ function formatDuration(str) {
 export default function SleepLog() {
   const [formData, setFormData] = useState(DEFAULT_FORM);
   const [savedLog, setSavedLog] = useState(null);
+  const [prediction, setPrediction] = useState(null);
+  const [predicting, setPredicting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const set = (key, val) => setFormData((prev) => ({ ...prev, [key]: val }));
@@ -61,6 +64,7 @@ export default function SleepLog() {
     }
 
     setSubmitting(true);
+    setPrediction(null);
     try {
       const res = await fetch(`${API_BASE}/api/sleeplog/`, {
         method: 'POST',
@@ -80,16 +84,33 @@ export default function SleepLog() {
 
       const data = await res.json();
       setSavedLog(data);
-      toast.success('Sleep data saved successfully!');
+
+      setPredicting(true);
+      const predictRes = await fetch(`${API_BASE}/api/sleeplog/${data.id}/predict/`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!predictRes.ok) {
+        toast.error('Sleep data saved, but prediction could not be generated.');
+      } else {
+        const predictData = await predictRes.json();
+        setPrediction(predictData);
+        toast.success('Sleep data saved and prediction generated!');
+      }
     } catch {
       toast.error('Could not reach the server.');
     } finally {
+      setPredicting(false);
       setSubmitting(false);
     }
   };
 
   return (
     <div className="wellness-shell">
+      <FloatingStars />
       <AppSidebar />
       <main className="wellness-content">
         <div className="sleep-log-wrap">
@@ -128,6 +149,22 @@ export default function SleepLog() {
                   <span className="sl-result-label">Problems for</span>
                   <strong className="sl-result-value">
                     {savedLog.duration_of_problems} year{savedLog.duration_of_problems > 1 ? 's' : ''}
+                  </strong>
+                </div>
+                <div className="sl-result-divider" />
+                <div className="sl-result-row sl-result-row-wide">
+                  <AlertCircle size={16} strokeWidth={1.8} className="sl-icon-accent" />
+                  <span className="sl-result-label">AI prediction</span>
+                  <strong className="sl-result-value">
+                    {predicting && 'Generating prediction...'}
+                    {!predicting && !prediction && 'Unavailable'}
+                    {!predicting && prediction && (
+                      <>
+                        {prediction.prediction === 'insomnia' ? 'Insomnia risk' : 'No insomnia risk'}
+                        {' '}
+                        ({(Number(prediction.confidence || 0) * 100).toFixed(1)}%)
+                      </>
+                    )}
                   </strong>
                 </div>
               </motion.div>

@@ -1,0 +1,218 @@
+/* ── Page layout ─────────────────────────────────────────────────────── */
+.wellness-content {
+  position: relative;
+  z-index: 1;
+}
+
+.journal-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.journal-header {
+  margin-bottom: 30px;
+}
+
+.journal-title {
+  margin: 0 0 8px;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: #f0f5ff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+}
+
+.journal-title svg {
+  color: #a7c7e7;
+  flex-shrink: 0;
+}
+
+.journal-sub {
+  margin: 0;
+  color: #9bb0cc;
+  line-height: 1.65;
+}
+
+/* ── Form ─────────────────────────────────────────────────────────────── */
+.journal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.journal-label-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.journal-icon-primary {
+  color: #6ea8d8;
+  flex-shrink: 0;
+}
+
+.journal-icon-accent {
+  color: #a7c7e7;
+  flex-shrink: 0;
+}
+
+/* ── Textarea ─────────────────────────────────────────────────────────── */
+.journal-textarea-wrap {
+  position: relative;
+}
+
+.journal-glow {
+  position: absolute;
+  inset: -8px;
+  background: radial-gradient(ellipse at center, rgba(110, 168, 216, 0.12), transparent 70%);
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.journal-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 320px;
+  border-radius: 14px;
+  border: 1px solid rgba(100, 160, 255, 0.22);
+  background: rgba(5, 9, 24, 0.7);
+  color: #e8eef8;
+  padding: 16px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  position: relative;
+  z-index: 1;
+}
+
+.journal-textarea::placeholder {
+  color: #5a7090;
+}
+
+.journal-textarea:focus {
+  border-color: rgba(70, 130, 180, 0.65);
+  box-shadow: 0 0 0 3px rgba(70, 130, 180, 0.18);
+}
+
+/* ── Hint row ─────────────────────────────────────────────────────────── */
+.journal-hint-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  color: #7090b0;
+}
+
+/* ── Submit button ────────────────────────────────────────────────────── */
+.journal-submit-btn {
+  width: 100%;
+  padding: 14px 0;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ── Loading state ────────────────────────────────────────────────────── */
+.journal-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #7090b0;
+  font-size: 0.9rem;
+  padding: 20px 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.journal-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+/* ── Previous entries ─────────────────────────────────────────────────── */
+.journal-entries-section {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.journal-entries-title {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #dce8ff;
+}
+
+.journal-entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #7090b0;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.journal-entry-content {
+  margin: 0;
+  color: #c8d8ee;
+  line-height: 1.7;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+}
+
+.journal-analysis-text {
+  margin: 12px 0 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 0.85rem;
+  color: #7db8d8;
+  font-style: italic;
+  line-height: 1.55;
+  border-left: 2px solid rgba(70, 130, 180, 0.35);
+  padding-left: 10px;
+}
+
+/* ── Status / mood badges ─────────────────────────────────────────────── */
+.journal-mood-badge {
+  margin-left: auto;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(70, 130, 180, 0.2);
+  color: #7db8d8;
+  border: 1px solid rgba(70, 130, 180, 0.3);
+}
+
+.journal-status-badge {
+  margin-left: auto;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.journal-status-badge.pending {
+  background: rgba(200, 160, 60, 0.15);
+  color: #c8a03c;
+  border: 1px solid rgba(200, 160, 60, 0.25);
+}
+
+/* ── Focus ring on GlassCard ──────────────────────────────────────────── */
+.journal-card-focus {
+  transition: box-shadow 0.2s ease;
+}
+
+.journal-card-focus.focused {
+  box-shadow: 0 0 0 2px rgba(110, 168, 216, 0.4);
+}
