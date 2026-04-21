@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { GlassCard } from '../components/GlassCard';
-import { OnboardingProgress } from '../components/OnboardingProgress';
-import { Label } from '../components/ui/label';
-import { Button } from '../components/ui/button';
-import { Switch } from '../components/ui/switch';
+import { GlassCard } from '../../components/GlassCard';
+import { OnboardingProgress } from '../../components/OnboardingProgress';
+import { Label } from '../../components/ui/label';
+import { Button } from '../../components/ui/button';
+import { Switch } from '../../components/ui/switch';
 import { Moon, Clock, Star, AlertCircle, Check, Timer, CalendarClock } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
-import AppSidebar from '../components/AppSidebar';
+import AppSidebar from '../../components/AppSidebar';
 import './SleepLog.css';
 
 const API_BASE = import.meta.env.VITE_API_BASE;
