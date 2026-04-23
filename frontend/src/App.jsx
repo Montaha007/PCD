@@ -4,6 +4,8 @@ import Login from "./pages/accounts/Login";
 import Profile from "./pages/profile/Profile";
 import AppSection from "./pages/AppSection";
 import SleepLog from "./pages/sleeplog/SleepLog";
+import Journal from "./pages/mood/Journal";
+import LifestyleForm from "./pages/lifestyle/LifeStyle";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserDataProvider } from "./context/UserDataContext";
 import { Toaster } from "sonner";
@@ -38,24 +40,8 @@ function App() {
           }
         />
         <Route path="/sleep-log" element={<SleepLog />} />
-        <Route
-          path="/lifestyle"
-          element={
-            <AppSection
-              title="Lifestyle"
-              description="Capture daily habits like caffeine, screens, meals, and activity."
-            />
-          }
-        />
-        <Route
-          path="/journal"
-          element={
-            <AppSection
-              title="Journal"
-              description="Store your mood, thoughts, and emotional patterns alongside sleep data."
-            />
-          }
-        />
+        <Route path="/lifestyle" element={<LifestyleForm />} />
+        <Route path="/journal" element={<Journal />} />
         <Route
           path="/routine-optimizer"
           element={

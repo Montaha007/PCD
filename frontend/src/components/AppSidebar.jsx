@@ -121,7 +121,7 @@ export default function AppSidebar() {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  useEffect(() => {
+useEffect(() => {
     const savedState = localStorage.getItem(SIDEBAR_STATE_KEY);
     if (savedState === "1") {
       setIsCollapsed(true);

@@ -1,9 +1,11 @@
 import AppSidebar from "../components/AppSidebar";
+import FloatingStars from "../components/FloatingStars";
 import "./profile/Profile.css";
 
 export default function AppSection({ title, description }) {
   return (
     <div className="wellness-shell">
+      <FloatingStars />
       <AppSidebar />
       <main className="wellness-content">
         <section className="section-panel">

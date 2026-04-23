@@ -10,10 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR / ".env")
+except ImportError:
+    pass
 
 
 # Quick-start development settings - unsuitable for production
@@ -34,6 +41,8 @@ INSTALLED_APPS = [
     "accounts",
     "profiles",
     "sleeplog",
+    "mood",
+    'lifestyle',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -137,9 +146,20 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+# ── Qdrant ────────────────────────────────────────────────────────────────────
+QDRANT_URL     = os.environ.get("QDRANT_URL", "")
+QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY", "")
+
+# One entry per domain — override any name via env vars
+QDRANT_COLLECTIONS = {
+    "sleep":   os.environ.get("QDRANT_SLEEP_COLLECTION",   "sleep_disorders"),
+    #"fatigue": os.environ.get("QDRANT_FATIGUE_COLLECTION", "fatigue_logs"),
+    #"mood":    os.environ.get("QDRANT_MOOD_COLLECTION",    "mood_logs"),
+}
+
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }

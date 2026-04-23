@@ -1,0 +1,33 @@
+.floating-stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.floating-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #c8dff5;
+  opacity: var(--opacity-min, 0.2);
+  animation-name: star-float, star-twinkle;
+  animation-duration: var(--float-duration, 8s), var(--twinkle-duration, 2.8s);
+  animation-delay: var(--float-delay, 0s), var(--twinkle-delay, 0s);
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes star-float {
+  0%   { transform: translateY(0px)   scale(1);   }
+  50%  { transform: translateY(-18px) scale(1.2); }
+  100% { transform: translateY(0px)   scale(1);   }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: var(--opacity-min, 0.15); }
+  20%      { opacity: var(--opacity-max, 0.8); }
+  45%      { opacity: calc((var(--opacity-min, 0.15) + var(--opacity-max, 0.8)) / 2); }
+  70%      { opacity: var(--opacity-max, 0.8); }
+}
