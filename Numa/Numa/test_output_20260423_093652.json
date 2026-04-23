@@ -1,0 +1,480 @@
+{
+  "unified_profile": {
+    "user_id": "user-test-001",
+    "profile_timestamp": "2024-09-16T14:30:00.000Z",
+    "insomnia_detected": true,
+    "primary_disorder": "Insomnia",
+    "insomnia_type": "Chronic",
+    "overall_confidence": 0.7542,
+    "confidence_tier": "MEDIUM",
+    "confidence_weighting": {
+      "sleep_model_weight": 0.4011,
+      "lifestyle_model_weight": 0.2995,
+      "nlp_mental_health_model_weight": 0.2994
+    },
+    "aggregated_signals": {
+      "sleep_model": {
+        "insomnia_detected": true,
+        "predicted_disorder": "Insomnia",
+        "confidence": 0.82,
+        "vote_counts": {
+          "Insomnia": 4,
+          "None": 1
+        },
+        "vote_confidence": 0.8,
+        "classifier_name": "RandomForestClassifier",
+        "accuracy": 0.87,
+        "f1_score": 0.85
+      },
+      "lifestyle_model": {
+        "predicted_sleep_hours": 5.2,
+        "sleep_quality_label": "INSUFFICIENT",
+        "routine_trigger": true,
+        "confidence": 0.71,
+        "primary_cause": "Excessive caffeine intake combined with high screen time",
+        "primary_causes": [
+          "CaffeineIntake",
+          "PhoneTime"
+        ],
+        "secondary_causes": [
+          "WorkHours",
+          "Screen_Time_Intensity"
+        ],
+        "feature_importances": {
+          "CaffeineIntake": 0.34,
+          "PhoneTime": 0.28,
+          "WorkHours": 0.21,
+          "Screen_Time_Intensity": 0.19,
+          "Work_x_Caffeine": 0.15,
+          "RelaxationTime": -0.18,
+          "WorkoutTime": -0.12,
+          "ReadingTime": -0.08
+        },
+        "r2_score": 0.71,
+        "mae_hours": 0.48
+      },
+      "nlp_mental_health_model": {
+        "dominant_mental_state": "anxiety",
+        "confidence": 0.76,
+        "primary_emotion": "anxiety",
+        "secondary_emotions": [
+          "stress",
+          "rumination",
+          "fatigue"
+        ],
+        "root_causes_extracted": [
+          "work pressure",
+          "financial stress",
+          "social isolation"
+        ],
+        "top_symptoms": [
+          "insomnia",
+          "fatigue",
+          "racing thoughts",
+          "hyperarousal",
+          "concentration difficulties"
+        ],
+        "top_emotions": [
+          "fear",
+          "worry",
+          "sadness",
+          "irritability"
+        ],
+        "top_triggers": [
+          "work pressure",
+          "deadlines",
+          "social isolation",
+          "financial concerns"
+        ],
+        "nlp_accuracy": 0.78
+      }
+    },
+    "conflicts_detected": [
+      {
+        "conflict_type": "Sleep-NLP",
+        "description": "Sleep model detected insomnia, but NLP model detected anxiety as primary mental state",
+        "clinical_implication": "Patient may be experiencing insomnia as a symptom of underlying anxiety",
+        "resolution": "Recommend cognitive behavioral therapy for insomnia and anxiety management"
+      },
+      {
+        "conflict_type": "Sleep-Lifestyle",
+        "description": "Sleep model detected insomnia, but lifestyle model detected insufficient sleep hours due to excessive caffeine intake and high screen time",
+        "clinical_implication": "Patient's lifestyle habits may be contributing to insomnia",
+        "resolution": "Recommend lifestyle modifications, such as reducing caffeine intake and screen time before bedtime"
+      }
+    ],
+    "missing_signals": [],
+    "profile_summary": "Patient is experiencing chronic insomnia, with a primary disorder of insomnia and an overall confidence of 0.7542. The sleep model detected insomnia with a confidence of 0.8200, while the lifestyle model detected insufficient sleep hours due to excessive caffeine intake and high screen time. The NLP mental health model detected anxiety as the primary mental state, with a confidence of 0.7600. Conflicts were detected between the sleep and NLP models, as well as between the sleep and lifestyle models.",
+    "flags": {
+      "insomnia_flag": true,
+      "anxiety_flag": true,
+      "lifestyle_modification_flag": true
+    }
+  },
+  "reasoning_report": {
+    "user_id": "user-test-001",
+    "reasoning_timestamp": "2024-09-16T14:30:00.000Z",
+    "insomnia_confirmed": true,
+    "insomnia_type": "Chronic",
+    "primary_disorder": "Insomnia",
+    "rules_applied": [
+      "Rule Set A: 3P Model confirmed insomnia",
+      "Rule Set B: Lifestyle features extracted causes",
+      "Rule Set C: NLP/Neo4j signals extracted causes",
+      "Rule Set D: Cross-signal causes handled"
+    ],
+    "root_causes": [
+      {
+        "cause": "Excessive caffeine intake",
+        "clinical_weight": 0.43,
+        "convergence": 0.35,
+        "confidence": 0.25,
+        "modifiability": 0.15,
+        "rule": "Rule Set B: Lifestyle features",
+        "field_values": [
+          "CaffeineIntake",
+          "PhoneTime"
+        ],
+        "graph_entities": [
+          "CAUSES",
+          "TRIGGERED_BY",
+          "ASSOCIATED_WITH"
+        ]
+      },
+      {
+        "cause": "High screen time before bedtime",
+        "clinical_weight": 0.38,
+        "convergence": 0.3,
+        "confidence": 0.2,
+        "modifiability": 0.1,
+        "rule": "Rule Set B: Lifestyle features",
+        "field_values": [
+          "PhoneTime",
+          "Screen_Time_Intensity"
+        ],
+        "graph_entities": [
+          "CAUSES",
+          "TRIGGERED_BY",
+          "ASSOCIATED_WITH"
+        ]
+      },
+      {
+        "cause": "Anxiety",
+        "clinical_weight": 0.35,
+        "convergence": 0.25,
+        "confidence": 0.15,
+        "modifiability": 0.05,
+        "rule": "Rule Set C: NLP/Neo4j signals",
+        "field_values": [
+          "dominant_mental_state",
+          "primary_emotion"
+        ],
+        "graph_entities": [
+          "CAUSES",
+          "TRIGGERED_BY",
+          "ASSOCIATED_WITH"
+        ]
+      },
+      {
+        "cause": "Work pressure and financial stress",
+        "clinical_weight": 0.32,
+        "convergence": 0.2,
+        "confidence": 0.1,
+        "modifiability": 0.05,
+        "rule": "Rule Set C: NLP/Neo4j signals",
+        "field_values": [
+          "root_causes_extracted",
+          "top_triggers"
+        ],
+        "graph_entities": [
+          "CAUSES",
+          "TRIGGERED_BY",
+          "ASSOCIATED_WITH"
+        ]
+      },
+      {
+        "cause": "Social isolation",
+        "clinical_weight": 0.28,
+        "convergence": 0.15,
+        "confidence": 0.05,
+        "modifiability": 0.05,
+        "rule": "Rule Set C: NLP/Neo4j signals",
+        "field_values": [
+          "root_causes_extracted",
+          "top_triggers"
+        ],
+        "graph_entities": [
+          "CAUSES",
+          "TRIGGERED_BY",
+          "ASSOCIATED_WITH"
+        ]
+      },
+      {
+        "cause": "Insufficient sleep hours due to lifestyle habits",
+        "clinical_weight": 0.25,
+        "convergence": 0.1,
+        "confidence": 0.05,
+        "modifiability": 0.05,
+        "rule": "Rule Set B: Lifestyle features",
+        "field_values": [
+          "predicted_sleep_hours",
+          "sleep_quality_label"
+        ],
+        "graph_entities": [
+          "CAUSES",
+          "TRIGGERED_BY",
+          "ASSOCIATED_WITH"
+        ]
+      }
+    ],
+    "edge_cases": [
+      {
+        "edge_case": "Sleep-NLP conflict",
+        "description": "Sleep model detected insomnia, but NLP model detected anxiety as primary mental state",
+        "clinical_implication": "Patient may be experiencing insomnia as a symptom of underlying anxiety",
+        "resolution": "Recommend cognitive behavioral therapy for insomnia and anxiety management",
+        "severity": "MEDIUM"
+      },
+      {
+        "edge_case": "Sleep-Lifestyle conflict",
+        "description": "Sleep model detected insomnia, but lifestyle model detected insufficient sleep hours due to excessive caffeine intake and high screen time",
+        "clinical_implication": "Patient's lifestyle habits may be contributing to insomnia",
+        "resolution": "Recommend lifestyle modifications, such as reducing caffeine intake and screen time before bedtime",
+        "severity": "MEDIUM"
+      },
+      {
+        "edge_case": "Anxiety-Insomnia comorbidity",
+        "description": "Patient is experiencing both anxiety and insomnia",
+        "clinical_implication": "Patient may require treatment for both conditions",
+        "resolution": "Recommend cognitive behavioral therapy for anxiety and insomnia management",
+        "severity": "HIGH"
+      },
+      {
+        "edge_case": "Lifestyle-Insomnia interaction",
+        "description": "Patient's lifestyle habits are interacting with insomnia",
+        "clinical_implication": "Patient's lifestyle habits may be exacerbating insomnia",
+        "resolution": "Recommend lifestyle modifications, such as reducing caffeine intake and screen time before bedtime",
+        "severity": "MEDIUM"
+      },
+      {
+        "edge_case": "NLP-Sleep model discrepancy",
+        "description": "NLP model detected anxiety, but sleep model detected insomnia",
+        "clinical_implication": "Patient may be experiencing insomnia as a symptom of underlying anxiety",
+        "resolution": "Recommend cognitive behavioral therapy for insomnia and anxiety management",
+        "severity": "MEDIUM"
+      },
+      {
+        "edge_case": "Lifestyle-NLP model discrepancy",
+        "description": "Lifestyle model detected insufficient sleep hours, but NLP model detected anxiety",
+        "clinical_implication": "Patient's lifestyle habits may be contributing to anxiety",
+        "resolution": "Recommend lifestyle modifications, such as reducing caffeine intake and screen time before bedtime",
+        "severity": "MEDIUM"
+      },
+      {
+        "edge_case": "Insomnia-Anxiety treatment interaction",
+        "description": "Patient's treatment for insomnia may be interacting with anxiety",
+        "clinical_implication": "Patient may require treatment for both conditions",
+        "resolution": "Recommend cognitive behavioral therapy for anxiety and insomnia management",
+        "severity": "HIGH"
+      },
+      {
+        "edge_case": "Lifestyle-Insomnia treatment interaction",
+        "description": "Patient's lifestyle habits may be interacting with insomnia treatment",
+        "clinical_implication": "Patient's lifestyle habits may be exacerbating insomnia",
+        "resolution": "Recommend lifestyle modifications, such as reducing caffeine intake and screen time before bedtime",
+        "severity": "MEDIUM"
+      }
+    ],
+    "reasoning_summary": "Patient is experiencing chronic insomnia, with a primary disorder of insomnia and an overall confidence of 0.7542. The sleep model detected insomnia with a confidence of 0.8200, while the lifestyle model detected insufficient sleep hours due to excessive caffeine intake and high screen time. The NLP mental health model detected anxiety as the primary mental state, with a confidence of 0.7600. Conflicts were detected between the sleep and NLP models, as well as between the sleep and lifestyle models. The patient may be experiencing insomnia as a symptom of underlying anxiety, and may require treatment for both conditions.",
+    "referral_required": true,
+    "referral_reason": "Anxiety-Insomnia comorbidity and Insomnia-Anxiety treatment interaction",
+    "confidence_in_reasoning": 0.85,
+    "data_gaps": []
+  },
+  "final_output": {
+    "user_id": "user-test-001",
+    "plan_generated_at": "2024-09-16T14:30:00.000Z",
+    "diagnosis": "Chronic Insomnia",
+    "cause_breakdown": [
+      {
+        "cause": "Excessive caffeine intake",
+        "clinical_weight": 0.43,
+        "convergence": 0.35,
+        "confidence": 0.25,
+        "modifiability": 0.15,
+        "target_cause_id": "RC-01"
+      },
+      {
+        "cause": "High screen time before bedtime",
+        "clinical_weight": 0.38,
+        "convergence": 0.3,
+        "confidence": 0.2,
+        "modifiability": 0.1,
+        "target_cause_id": "RC-02"
+      },
+      {
+        "cause": "Anxiety",
+        "clinical_weight": 0.35,
+        "convergence": 0.25,
+        "confidence": 0.15,
+        "modifiability": 0.05,
+        "target_cause_id": "RC-03"
+      },
+      {
+        "cause": "Work pressure and financial stress",
+        "clinical_weight": 0.32,
+        "convergence": 0.2,
+        "confidence": 0.1,
+        "modifiability": 0.05,
+        "target_cause_id": "RC-04"
+      },
+      {
+        "cause": "Social isolation",
+        "clinical_weight": 0.28,
+        "convergence": 0.15,
+        "confidence": 0.05,
+        "modifiability": 0.05,
+        "target_cause_id": "RC-05"
+      },
+      {
+        "cause": "Insufficient sleep hours due to lifestyle habits",
+        "clinical_weight": 0.25,
+        "convergence": 0.1,
+        "confidence": 0.05,
+        "modifiability": 0.05,
+        "target_cause_id": "RC-06"
+      }
+    ],
+    "referral_required": true,
+    "referral_message": "Due to the presence of anxiety and its potential interaction with insomnia, it is recommended that you consult a mental health professional for further evaluation and treatment.",
+    "action_plan": {
+      "short_term": [
+        {
+          "action": "Establish a consistent sleep schedule",
+          "timing": "21:30",
+          "quantity": "7-8 hours",
+          "frequency": "every night",
+          "target_cause_id": "RC-06"
+        },
+        {
+          "action": "Power off all screens",
+          "timing": "21:30",
+          "quantity": "30 minutes before bedtime",
+          "frequency": "every night",
+          "target_cause_id": "RC-02"
+        }
+      ],
+      "long_term": [
+        {
+          "phase": 1,
+          "actions": [
+            {
+              "action": "Gradually reduce caffeine intake",
+              "timing": "14:00",
+              "quantity": "1 cup",
+              "frequency": "every day",
+              "target_cause_id": "RC-01"
+            },
+            {
+              "action": "Engage in relaxation techniques",
+              "timing": "20:00",
+              "quantity": "30 minutes",
+              "frequency": "every night",
+              "target_cause_id": "RC-03"
+            }
+          ]
+        },
+        {
+          "phase": 2,
+          "actions": [
+            {
+              "action": "Increase physical activity",
+              "timing": "18:00",
+              "quantity": "30 minutes",
+              "frequency": "every day",
+              "target_cause_id": "RC-04"
+            },
+            {
+              "action": "Practice social connections",
+              "timing": "19:00",
+              "quantity": "1 hour",
+              "frequency": "every day",
+              "target_cause_id": "RC-05"
+            }
+          ]
+        },
+        {
+          "phase": 3,
+          "actions": [
+            {
+              "action": "Maintain a sleep diary",
+              "timing": "07:00",
+              "quantity": "10 minutes",
+              "frequency": "every morning",
+              "target_cause_id": "RC-06"
+            },
+            {
+              "action": "Review and adjust sleep habits",
+              "timing": "20:00",
+              "quantity": "30 minutes",
+              "frequency": "every week",
+              "target_cause_id": "RC-06"
+            }
+          ]
+        }
+      ]
+    },
+    "psychoeducation": [
+      {
+        "topic": "Sleep hygiene",
+        "description": "Establishing a consistent sleep schedule, avoiding caffeine and electronics before bedtime, and creating a relaxing sleep environment",
+        "target_cause_id": "RC-06"
+      },
+      {
+        "topic": "Anxiety management",
+        "description": "Engaging in relaxation techniques, such as deep breathing and progressive muscle relaxation, to manage anxiety and promote sleep",
+        "target_cause_id": "RC-03"
+      }
+    ],
+    "progress_metrics": [
+      {
+        "metric": "Sleep quality",
+        "description": "Subjective report of sleep quality, ranging from 1 (poor) to 5 (excellent)",
+        "target_cause_id": "RC-06"
+      },
+      {
+        "metric": "Anxiety levels",
+        "description": "Subjective report of anxiety levels, ranging from 1 (low) to 5 (high)",
+        "target_cause_id": "RC-03"
+      }
+    ],
+    "contraindications": [
+      {
+        "contraindication": "Sleep restriction",
+        "description": "Avoiding sleep restriction due to potential exacerbation of anxiety",
+        "target_cause_id": "RC-03"
+      }
+    ],
+    "plan_confidence": 0.85,
+    "plan_summary": "The patient is experiencing chronic insomnia, with a primary disorder of insomnia and an overall confidence of 0.7542. The plan aims to address the root causes of insomnia, including excessive caffeine intake, high screen time before bedtime, anxiety, work pressure and financial stress, social isolation, and insufficient sleep hours due to lifestyle habits. The patient is referred to a mental health professional for further evaluation and treatment of anxiety."
+  },
+  "pipeline_metadata": {
+    "run_timestamp": "2026-04-23T08:35:43.787755+00:00",
+    "execution_seconds": 68.97,
+    "framework": "CrewAI",
+    "process": "sequential",
+    "sections": [
+      "§5.2",
+      "§5.3",
+      "§5.4",
+      "§5.5"
+    ],
+    "agents": 3,
+    "tasks": 3,
+    "insomnia_confirmed": true,
+    "referral_required": true,
+    "confidence_tier": "MEDIUM",
+    "root_cause_count": 6,
+    "short_term_actions": 0
+  }
+}
