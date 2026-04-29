@@ -133,7 +133,6 @@ def run_sleep_pipeline(sleep_log) -> dict:
         "signals_conflict":  model_label != qdrant_label,
         "top_similar_cases": hits,
     }
-<<<<<<< HEAD
 
 # ─── Lifestyle pipeline (regression, no Qdrant, no scaler) ──────────────
 
@@ -178,7 +177,6 @@ def run_lifestyle_pipeline(features: dict) -> dict:
         "quality_label":         quality_label,
         "feature_snapshot":      features,
     }
-=======
  
 # Clinical system prompt — taken verbatim from neo4j-graphrag_5_.ipynb §16
 _SYSTEM_PROMPT = (
@@ -248,4 +246,3 @@ def graphrag_answer(text: str, k: int = 10) -> dict:
         "analysis_text":   analysis_text,
     }
  
->>>>>>> ada8a8e2365be13e62529f2bda60699f43ac1739

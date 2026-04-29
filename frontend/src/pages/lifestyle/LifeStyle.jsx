@@ -136,10 +136,12 @@ export default function LifestyleForm() {
         onChange={(e) => set(name, Number(e.target.value))}
         className="sl-range-input"
       />
-      <div className="sl-slider-display">
-        <span className="sl-slider-val-sm">{formData[name]}</span>
-        <span className="sl-slider-unit">{unit}</span>
-      </div>
+<div className="sl-slider-display">
+  <span className="sl-slider-val-sm">
+    {unit === 'mg' ? formData[name] : Number(formData[name]).toFixed(2)}
+  </span>
+  <span className="sl-slider-unit">{unit}</span>
+</div>
       <div className="sl-range-labels">
         <span>{min}{unit}</span>
         <span>{max}{unit}</span>
@@ -234,62 +236,62 @@ export default function LifestyleForm() {
             </GlassCard>
 
             {/* Activity section */}
-            <GlassCard>
-              <h3 className="sl-problems-header">
-                <Activity size={18} strokeWidth={1.8} className="sl-icon-accent" />
-                Activity
-              </h3>
-              <div className="sl-sliders-stack">
-                <SliderRow
-                  icon={Activity}  label="Workout time"
-                  name="WorkoutTime"  min={0} max={3} step={0.25} unit="h"
-                />
-                <SliderRow
-                  icon={BookOpen}  label="Reading time"
-                  name="ReadingTime"  min={0} max={2} step={0.25} unit="h"
-                />
-                <SliderRow
-                  icon={Leaf}  label="Relaxation time"
-                  name="RelaxationTime"  min={0} max={2} step={0.25} unit="h"
-                />
-              </div>
-            </GlassCard>
+<GlassCard>
+  <h3 className="sl-problems-header">
+    <Activity size={18} strokeWidth={1.8} className="sl-icon-accent" />
+    Activity
+  </h3>
+  <div className="sl-sliders-stack">
+    <SliderRow
+      icon={Activity} label="Workout time"
+      name="WorkoutTime" min={0} max={3} step={0.01} unit="h"
+    />
+    <SliderRow
+      icon={BookOpen} label="Reading time"
+      name="ReadingTime" min={0} max={2} step={0.01} unit="h"
+    />
+    <SliderRow
+      icon={Leaf} label="Relaxation time"
+      name="RelaxationTime" min={0} max={2} step={0.01} unit="h"
+    />
+  </div>
+        </GlassCard>
 
-            {/* Screens & Work */}
-            <GlassCard>
-              <h3 className="sl-problems-header">
-                <Briefcase size={18} strokeWidth={1.8} className="sl-icon-accent" />
-                Screens &amp; Work
-              </h3>
-              <div className="sl-sliders-stack">
-                <SliderRow
-                  icon={Smartphone}  label="Phone time"
-                  name="PhoneTime"  min={1} max={5} step={0.25} unit="h"
-                />
-                <SliderRow
-                  icon={Briefcase}  label="Work hours"
-                  name="WorkHours"  min={4} max={10} step={0.5} unit="h"
-                />
-              </div>
-            </GlassCard>
+{/* Screens & Work */}
+<GlassCard>
+  <h3 className="sl-problems-header">
+    <Briefcase size={18} strokeWidth={1.8} className="sl-icon-accent" />
+    Screens &amp; Work
+  </h3>
+  <div className="sl-sliders-stack">
+    <SliderRow
+      icon={Smartphone} label="Phone time"
+      name="PhoneTime" min={1} max={5} step={0.01} unit="h"
+    />
+    <SliderRow
+      icon={Briefcase} label="Work hours"
+      name="WorkHours" min={4} max={10} step={0.01} unit="h"
+    />
+  </div>
+</GlassCard>
 
-            {/* Caffeine */}
-            <GlassCard>
-              <h3 className="sl-problems-header">
-                <Coffee size={18} strokeWidth={1.8} className="sl-icon-alert" />
-                Caffeine
-              </h3>
-              <div className="sl-sliders-stack">
-                <SliderRow
-                  icon={Coffee}  label="Caffeine intake"
-                  name="CaffeineIntake"  min={0} max={300} step={10} unit="mg"
-                  iconClass="sl-icon-alert"
-                />
-                <small className="sl-hint">
-                  1 espresso ≈ 65mg • 1 coffee ≈ 95mg • 1 energy drink ≈ 80mg
-                </small>
-              </div>
-            </GlassCard>
+{/* Caffeine */}
+<GlassCard>
+  <h3 className="sl-problems-header">
+    <Coffee size={18} strokeWidth={1.8} className="sl-icon-alert" />
+    Caffeine
+  </h3>
+  <div className="sl-sliders-stack">
+    <SliderRow
+      icon={Coffee} label="Caffeine intake"
+      name="CaffeineIntake" min={0} max={300} step={1} unit="mg"
+      iconClass="sl-icon-alert"
+    />
+    <small className="sl-hint">
+      1 espresso ≈ 65mg • 1 coffee ≈ 95mg • 1 energy drink ≈ 80mg
+    </small>
+  </div>
+</GlassCard>
 
             {/* Live preview of derived features */}
             <GlassCard>

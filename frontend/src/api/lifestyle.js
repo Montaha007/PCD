@@ -4,7 +4,7 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 /**
  * Normalized error wrapper so components can handle {status, data} uniformly.
  */
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(status, data) {
     super(`API error ${status}`);
     this.status = status;

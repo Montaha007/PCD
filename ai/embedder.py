@@ -6,8 +6,6 @@ IMPORTANT: use minmax_scaler_qdrant.pkl here — NOT scaler.pkl (StandardScaler)
            scaler.pkl is reserved exclusively for the classifier's predict path.
 """
 from __future__ import annotations
-
-import requests
 import pandas as pd
 
 from django.conf import settings

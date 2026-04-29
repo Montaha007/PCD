@@ -9,6 +9,8 @@ import LifestyleForm from "./pages/lifestyle/LifeStyle";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserDataProvider } from "./context/UserDataContext";
 import { Toaster } from "sonner";
+import AudioTherapy from "./pages/audiotherapy/AudioTherapy";
+
 
 function App() {
   return (
@@ -51,15 +53,7 @@ function App() {
             />
           }
         />
-        <Route
-          path="/audio-therapy"
-          element={
-            <AppSection
-              title="Audio Therapy"
-              description="Curate relaxing sound sessions and monitor what helps you fall asleep faster."
-            />
-          }
-        />
+        <Route path="/audio-therapy" element={<AudioTherapy />} />
         <Route
           path="/weekly-report"
           element={

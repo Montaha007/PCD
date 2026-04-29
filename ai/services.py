@@ -42,7 +42,6 @@ def predict_sleep(sleep_log) -> dict:
     }
     """
     return run_sleep_pipeline(sleep_log)
-<<<<<<< HEAD
 
 def predict_lifestyle(lifestyle_log) -> dict:
     """
@@ -59,7 +58,6 @@ def predict_lifestyle(lifestyle_log) -> dict:
     features = lifestyle_log.to_feature_dict()
     return run_lifestyle_pipeline(features)
 
-=======
 # ══════════════════════════════════════════════════════════════════════════════
 # NEW ADDITION — analyze_journal
 # ══════════════════════════════════════════════════════════════════════════════
@@ -92,4 +90,3 @@ def analyze_journal(text: str) -> dict:
     result: dict = graphrag_answer(cleaned)
  
     return result
->>>>>>> ada8a8e2365be13e62529f2bda60699f43ac1739
