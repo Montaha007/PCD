@@ -1,27 +1,31 @@
 // src/api/audiotherapy.js
-const API_BASE = import.meta.env.VITE_API_BASE;
+// ============================================================================
+// Single endpoint: the audio track is fully driven by Agent 3's output.
+// No manual override, no disorder picker.
+// ============================================================================
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
-function getAuthHeaders() {
+function authHeaders() {
+  // Adjust this to match the auth pattern your other working API files use.
   const token = localStorage.getItem('access_token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export async function fetchRecommendation(disorder = 'normal') {
-  const res = await fetch(
-    `${API_BASE}/api/audio/recommendations/?disorder=${disorder}`,
-    { headers: getAuthHeaders() }
-  );
+async function jsonOrThrow(res) {
   if (!res.ok) {
-    const data = await res.json().catch(() => ({}));
-    throw new Error(data.error || `Failed (${res.status})`);
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || body.detail || `HTTP ${res.status}`);
   }
   return res.json();
 }
 
-export async function fetchDisorders() {
-  const res = await fetch(`${API_BASE}/api/audio/disorders/`, {
-    headers: getAuthHeaders(),
+/**
+ * Fetch the audio recommendation derived from the user's latest completed
+ * AI pipeline run (Agent 3's final_output → Disorder mapping).
+ */
+export async function getPersonalisedRecommendation() {
+  const res = await fetch(`${API_BASE}/api/audio/recommendation/`, {
+    headers: { ...authHeaders() },
   });
-  if (!res.ok) throw new Error(`Failed (${res.status})`);
-  return res.json();
+  return jsonOrThrow(res);
 }

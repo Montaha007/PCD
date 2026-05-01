@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     "mood",
     'lifestyle',
     'audio',
+    'core',
+    'ai',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -184,3 +184,89 @@
 .audio-loading {
   text-align: center; color: #9bb0cc; padding: 16px;
 }
+
+.audio-ai-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(110, 168, 216, 0.12),
+    rgba(155, 141, 240, 0.08)
+  );
+  border: 1px solid rgba(110, 168, 216, 0.25);
+  color: #cfe1f5;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.audio-ai-banner > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.audio-ai-banner svg {
+  flex-shrink: 0;
+  color: #6ea8d8;
+}
+
+.audio-ai-banner strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.audio-ai-summary {
+  margin: 0;
+  padding-left: 24px;
+  font-size: 13px;
+  color: #9fb8cf;
+  font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Referral notice — shown when Agent 3 flags an edge case
+   ───────────────────────────────────────────────────────────────────── */
+.audio-referral-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: rgba(231, 185, 167, 0.10);
+  border: 1px solid rgba(231, 185, 167, 0.35);
+  color: #f0d4c2;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.audio-referral-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #e7b9a7;
+}
+
+/* Fallback notice — shown when no completed pipeline run exists yet */
+.audio-fallback-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: rgba(155, 141, 240, 0.08);
+  border: 1px solid rgba(155, 141, 240, 0.30);
+  color: #c8c0e8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.audio-fallback-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #9b8df0;
+}

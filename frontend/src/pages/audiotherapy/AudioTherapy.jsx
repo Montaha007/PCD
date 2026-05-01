@@ -1,16 +1,17 @@
+// src/pages/AudioTherapy/AudioTherapy.jsx
 import { useState, useEffect, useRef } from 'react';
 import { GlassCard } from '../../components/GlassCard';
 import { OnboardingProgress } from '../../components/OnboardingProgress';
 import { Label } from '../../components/ui/label';
 import {
-  Headphones, Brain, Sparkles, Volume2, Play, Square,
-  Waves, Activity, AlertCircle,
+  Headphones, Sparkles, Volume2, Play, Square,
+  Waves, Activity, AlertCircle, Stethoscope,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import AppSidebar from '../../components/AppSidebar';
 import FloatingStars from '../../components/FloatingStars';
-import { fetchRecommendation, fetchDisorders } from '../../api/audiotherapy';
+import { getPersonalisedRecommendation } from '../../api/audiotherapy';
 import { BrainwaveSynth } from '../../audio/BrainwaveSynth';
 import './AudioTherapy.css';
 
@@ -23,10 +24,8 @@ const BRAINWAVE_INFO = {
 };
 
 export default function AudioTherapy() {
-  const [disorders, setDisorders] = useState([]);
-  const [selectedDisorder, setSelectedDisorder] = useState('normal');
   const [recommendation, setRecommendation] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Playback state
   const [isPlaying, setIsPlaying] = useState(false);
@@ -38,24 +37,26 @@ export default function AudioTherapy() {
   const synthRef = useRef(null);
   if (!synthRef.current) synthRef.current = new BrainwaveSynth();
 
-  // Load disorder list once
+  // ───────────────────────────────────────────────────────────────────────
+  // Load the AI-derived recommendation on mount. That's the only fetch.
+  // ───────────────────────────────────────────────────────────────────────
   useEffect(() => {
-    fetchDisorders().then(setDisorders).catch(() => {
-      toast.error('Could not load disorder list.');
-    });
-  }, []);
-
-  // Load recommendation when disorder changes; stop playback if any
-  useEffect(() => {
+    let cancelled = false;
     setLoading(true);
-    if (synthRef.current.isPlaying) {
-      synthRef.current.stop().then(() => setIsPlaying(false));
-    }
-    fetchRecommendation(selectedDisorder)
-      .then(setRecommendation)
-      .catch((err) => toast.error(err.message))
-      .finally(() => setLoading(false));
-  }, [selectedDisorder]);
+
+    getPersonalisedRecommendation()
+      .then((rec) => {
+        if (cancelled) return;
+        setRecommendation(rec);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        toast.error(err.message || 'Could not load your recommendation.');
+      })
+      .finally(() => !cancelled && setLoading(false));
+
+    return () => { cancelled = true; };
+  }, []);
 
   // Volume changes apply live without restarting
   useEffect(() => {
@@ -78,7 +79,7 @@ export default function AudioTherapy() {
     if (!recommendation) return;
     try {
       await synthRef.current.start({
-        carrierHz: recommendation.carrier_frequency_hz,
+        carrierHz:   recommendation.carrier_frequency_hz,
         brainwaveHz: recommendation.target_frequency_hz,
         technique,
         ambient,
@@ -100,6 +101,10 @@ export default function AudioTherapy() {
     ? BRAINWAVE_INFO[recommendation.primary_brainwave]
     : null;
 
+  // True when the displayed track came directly from Agent 3 (vs the
+  // server-side NORMAL fallback when no completed run exists yet).
+  const fromAgent3 = recommendation?.source_stage === 'agent_3';
+
   return (
     <div className="wellness-shell">
       <FloatingStars />
@@ -118,29 +123,53 @@ export default function AudioTherapy() {
             </p>
           </div>
 
-          {/* Disorder override */}
-          <GlassCard>
-            <div className="audio-card-inner">
-              <div className="audio-label-row">
-                <Brain size={16} strokeWidth={1.8} className="audio-icon-primary" />
-                <Label htmlFor="disorder">Current state</Label>
-              </div>
-              <select
-                id="disorder"
-                className="audio-select"
-                value={selectedDisorder}
-                onChange={(e) => setSelectedDisorder(e.target.value)}
-                disabled={isPlaying}
+          {/* AI-derived context banner — only when Agent 3 picked the track */}
+          <AnimatePresence>
+            {fromAgent3 && (
+              <motion.div
+                key="ai-context"
+                className="audio-ai-banner"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.3 }}
               >
-                {disorders.map((d) => (
-                  <option key={d.value} value={d.value}>{d.label}</option>
-                ))}
-              </select>
-              <small className="audio-hint">
-                Defaults to your latest assessment. You can override for testing.
-              </small>
+                <span>
+                  <Sparkles size={16} strokeWidth={2} />
+                  Based on your latest analysis:{' '}
+                  <strong>{recommendation.disorder_display}</strong>
+                </span>
+                {recommendation.diagnosis_summary && (
+                  <p className="audio-ai-summary">
+                    {recommendation.diagnosis_summary}
+                  </p>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Fallback notice — when no completed pipeline run exists yet */}
+          {!loading && recommendation && !fromAgent3 && (
+            <div className="audio-fallback-banner">
+              <AlertCircle size={16} strokeWidth={2} />
+              <span>
+                Complete your daily Sleep, Lifestyle, and Journal entries to
+                unlock a personalised audio session. Showing a default track
+                in the meantime.
+              </span>
             </div>
-          </GlassCard>
+          )}
+
+          {/* Referral notice — when Agent 3 flags an edge case */}
+          {recommendation?.referral_required && (
+            <div className="audio-referral-banner">
+              <Stethoscope size={16} strokeWidth={2} />
+              <span>
+                Your latest analysis recommends speaking with a professional.
+                The audio below is intended for grounding only.
+              </span>
+            </div>
+          )}
 
           {/* Recommendation banner */}
           <AnimatePresence mode="wait">

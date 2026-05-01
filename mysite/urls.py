@@ -30,4 +30,5 @@ urlpatterns = [
     path('api/mood/', include('mood.urls')),
     path('api/lifestyle/', include('lifestyle.urls')),
     path('api/audio/', include('audio.urls')),
+    path("api/ai/", include("ai.urls")),
 ]
