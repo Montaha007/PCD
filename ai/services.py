@@ -15,8 +15,7 @@ It owns the full text-to-prediction chain:
 """
 from __future__ import annotations
 from .preprocessor import JournalPreprocessor
-from .pipeline import graphrag_answer
-from .pipeline import run_sleep_pipeline
+from .pipeline import graphrag_answer, run_sleep_pipeline, run_lifestyle_pipeline
 
 
 def predict_sleep(sleep_log) -> dict:
@@ -73,3 +72,17 @@ def analyze_journal(text: str) -> dict:
     result: dict = graphrag_answer(cleaned)
  
     return result
+def predict_lifestyle(lifestyle_log) -> dict:
+    """
+    Run the lifestyle regression model on *lifestyle_log*.
+
+    Returns
+    -------
+    {
+        "predicted_sleep_hours": float,   # model output in hours
+        "quality_label":         str,     # "insufficient" | "short" | "healthy" | "excessive"
+        "feature_snapshot":      dict,    # features the model saw (for debugging/UI)
+    }
+    """
+    features = lifestyle_log.to_feature_dict()
+    return run_lifestyle_pipeline(features)

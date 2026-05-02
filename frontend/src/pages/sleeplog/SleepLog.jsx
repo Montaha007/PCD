@@ -84,6 +84,7 @@ export default function SleepLog() {
 
       const data = await res.json();
       setSavedLog(data);
+      window.dispatchEvent(new Event('setup-progress-refresh'));
 
       setPredicting(true);
       const predictRes = await fetch(`${API_BASE}/api/sleeplog/${data.id}/predict/`, {
@@ -114,7 +115,7 @@ export default function SleepLog() {
       <AppSidebar />
       <main className="wellness-content">
         <div className="sleep-log-wrap">
-          <OnboardingProgress />
+          <OnboardingProgress currentStep="sleep" />
 
           <div className="sleep-log-header" style={{ marginTop: '28px' }}>
             <h1 className="sleep-log-title">

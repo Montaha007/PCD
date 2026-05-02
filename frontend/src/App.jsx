@@ -3,8 +3,10 @@ import Register from "./pages/accounts/Register";
 import Login from "./pages/accounts/Login";
 import Profile from "./pages/profile/Profile";
 import AppSection from "./pages/AppSection";
+import Dashboard from "./pages/dashboard/Dashboard";
 import SleepLog from "./pages/sleeplog/SleepLog";
 import Journal from "./pages/mood/Journal";
+import LifestyleForm from "./pages/lifestyle/LifeStyle";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserDataProvider } from "./context/UserDataContext";
 import { Toaster } from "sonner";
@@ -29,25 +31,9 @@ function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route
-          path="/dashboard"
-          element={
-            <AppSection
-              title="Dashboard"
-              description="Your sleep readiness snapshot, trends, and action highlights will live here."
-            />
-          }
-        />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/sleep-log" element={<SleepLog />} />
-        <Route
-          path="/lifestyle"
-          element={
-            <AppSection
-              title="Lifestyle"
-              description="Capture daily habits like caffeine, screens, meals, and activity."
-            />
-          }
-        />
+        <Route path="/lifestyle" element={<LifestyleForm />} />
         <Route path="/journal" element={<Journal />} />
         <Route
           path="/routine-optimizer"

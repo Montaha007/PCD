@@ -202,3 +202,46 @@ def graphrag_answer(text: str, k: int = 10) -> dict:
         "analysis_text":   analysis_text,
     }
  
+# ─── Lifestyle pipeline (regression, no Qdrant, no scaler) ──────────────
+
+LIFESTYLE_DOMAIN = "lifestyle"
+
+def run_lifestyle_pipeline(features: dict) -> dict:
+    """
+    Predict sleep hours from today's lifestyle features.
+
+    1. Load column order from JSON (saved during Colab training).
+    2. Scale features with the fitted scaler from Colab.
+    3. Predict with the ensemble (CatBoost + Ridge + SVR stacking).
+    """
+    kit = get_kit(LIFESTYLE_DOMAIN)
+    model = kit["model"]
+    scaler = kit["model_scaler"]
+    feature_columns = kit["feature_columns"]
+    import pandas as pd
+
+    # Build feature array in EXACT training column order
+    feature_df = pd.DataFrame([[features[col] for col in feature_columns]], columns=feature_columns)
+
+    # Scale — matches what the ensemble was trained on
+    feature_array_scaled = scaler.transform(feature_df)
+
+    # Predict
+    predicted_hours = float(model.predict(feature_array_scaled)[0])
+    predicted_hours = max(0.0, min(14.0, predicted_hours))
+
+    # UI-friendly bucketing
+    if predicted_hours < 6.0:
+        quality_label = "insufficient"
+    elif predicted_hours < 7.0:
+        quality_label = "short"
+    elif predicted_hours <= 9.0:
+        quality_label = "healthy"
+    else:
+        quality_label = "excessive"
+
+    return {
+        "predicted_sleep_hours": round(predicted_hours, 2),
+        "quality_label":         quality_label,
+        "feature_snapshot":      features,
+    }

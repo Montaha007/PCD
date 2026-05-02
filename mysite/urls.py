@@ -28,4 +28,5 @@ urlpatterns = [
     path('profiles/', include('profiles.urls')),
     path('api/sleeplog/', include('sleeplog.urls')),
     path('api/mood/', include('mood.urls')),
+    path('api/lifestyle/', include('lifestyle.urls')),
 ]

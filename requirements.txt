@@ -2,6 +2,7 @@ asgiref==3.11.1
 joblib
 numpy
 pandas
+catboost
 scikit-learn
 qdrant-client
 python-dotenv
