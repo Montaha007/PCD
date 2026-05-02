@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "profiles",
     "sleeplog",
     "mood",
+    "audio",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

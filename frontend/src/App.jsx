@@ -6,6 +6,7 @@ import AppSection from "./pages/AppSection";
 import Dashboard from "./pages/dashboard/Dashboard";
 import SleepLog from "./pages/sleeplog/SleepLog";
 import Journal from "./pages/mood/Journal";
+import AudioTherapy from "./pages/audiotherapy/AudioTherapy";
 import LifestyleForm from "./pages/lifestyle/LifeStyle";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserDataProvider } from "./context/UserDataContext";
@@ -44,15 +45,7 @@ function App() {
             />
           }
         />
-        <Route
-          path="/audio-therapy"
-          element={
-            <AppSection
-              title="Audio Therapy"
-              description="Curate relaxing sound sessions and monitor what helps you fall asleep faster."
-            />
-          }
-        />
+        <Route path="/audio-therapy" element={<AudioTherapy />} />
         <Route
           path="/weekly-report"
           element={

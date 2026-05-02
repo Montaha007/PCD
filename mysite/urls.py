@@ -29,4 +29,5 @@ urlpatterns = [
     path('api/sleeplog/', include('sleeplog.urls')),
     path('api/mood/', include('mood.urls')),
     path('api/lifestyle/', include('lifestyle.urls')),
+    path('api/audio/', include('audio.urls')),
 ]
