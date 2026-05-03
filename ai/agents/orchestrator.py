@@ -1,22 +1,26 @@
 """
-Orchestrator — maps a domain string to the right agent instance.
+orchestrator.py — Maps domain to agent (Numa-backed).
 
 Usage:
     from ai.agents.orchestrator import get_agent
-    agent = get_agent("sleep")
-    result = agent.run(sleep_log)
+    agent = get_agent("wellness")
+    result = agent.run(user_data)
 """
 from __future__ import annotations
 
-from .sleep_agent import SleepAgent
+from .adapters import NumaAdapter, SleepAgentWithReasoning
 
 _REGISTRY = {
-    "sleep": SleepAgent,
+    "wellness":        lambda: NumaAdapter(mode="full"),
+    "sleep":           SleepAgentWithReasoning,
+    "sleep_reasoning": lambda: NumaAdapter(mode="sleep_only"),
 }
 
 
 def get_agent(domain: str):
-    """Return a (cached, stateless) agent for *domain*."""
+    """Return an agent instance for *domain*."""
     if domain not in _REGISTRY:
-        raise ValueError(f"No agent registered for domain '{domain}'.")
-    return _REGISTRY[domain]()
+        available = ", ".join(_REGISTRY.keys())
+        raise ValueError(f"No agent for '{domain}'. Available: {available}")
+    factory = _REGISTRY[domain]
+    return factory() if callable(factory) else factory()

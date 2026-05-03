@@ -14,7 +14,7 @@ Output : Unified Insomnia Profile JSON  →  consumed by Reasoning Agent
 """
 
 from crewai import Agent
-from config import AGENT_LLM, AGENT_VERBOSE
+from ..config import AGENT_LLM, AGENT_VERBOSE
 
 
 # ─────────────────────────────────────────────────────────────────────────────

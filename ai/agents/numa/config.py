@@ -21,6 +21,19 @@ logger = logging.getLogger(__name__)
 
 
 load_dotenv()
+import sys
+from pathlib import Path
+
+# Import parent config
+parent_config_path = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(parent_config_path))
+
+from ai.config import (
+    GROQ_API_KEY, QDRANT_URL, QDRANT_API_KEY,
+    NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD,
+    SLEEP_CLASSIFIER_PATH, SLEEP_SCALER_PATH,
+    LIFESTYLE_MODEL_PATH, LIFESTYLE_SCALER_PATH,
+)
 
 
 # ── §5.1.3.3  LLM — Agent Layer ───────────────────────────────────────────────
@@ -47,21 +60,12 @@ def _build_agent_llm() -> Any | None:
 AGENT_LLM = _build_agent_llm()
 
 # ── §5.1.3.1  Qdrant — Shared Vector Store ────────────────────────────────────
-QDRANT_URL        = os.getenv("QDRANT_URL", "")
-QDRANT_API_KEY    = os.getenv("QDRANT_API_KEY", "")
-QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION", "PCD_Sleep_Disorder+Semantic")
+QDRANT_SLEEP_COLLECTION   = os.getenv("QDRANT_SLEEP_COLLECTION", "sleep_disorders")
+QDRANT_SEMANTIC_COLLECTION = os.getenv("QDRANT_SEMANTIC_COLLECTION", "PCD_Sleep_Disorder+Semantic")
 
-# ── §5.1.3.2  Neo4j — Graph Knowledge Base ────────────────────────────────────
-NEO4J_URI      = os.getenv("NEO4J_URI", "")
-NEO4J_USERNAME = os.getenv("NEO4J_USERNAME", "neo4j")
-NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD", "")
-
-# ── §5.2  Model Layer — pkl paths ─────────────────────────────────────────────
-SLEEP_CLASSIFIER_PATH   = os.getenv("SLEEP_CLASSIFIER_PATH",   "models/sleep_classifier.pkl")
-SLEEP_SCALER_PATH       = os.getenv("SLEEP_SCALER_PATH",       "models/sleep_scaler.pkl")
-LIFESTYLE_MODEL_PATH    = os.getenv("LIFESTYLE_MODEL_PATH",    "models/lifestyle_model.pkl")
-LIFESTYLE_SCALER_PATH   = os.getenv("LIFESTYLE_SCALER_PATH",   "models/lifestyle_scaler.pkl")
-
+# Backwards-compat: older modules still import QDRANT_COLLECTION.
+# Treat it as the semantic (384-dim) collection used by NLP.
+QDRANT_COLLECTION = QDRANT_SEMANTIC_COLLECTION
 # ── §5.3  Agent Layer — CrewAI settings ───────────────────────────────────────
 AGENT_VERBOSE = True
 CREW_VERBOSE  = True

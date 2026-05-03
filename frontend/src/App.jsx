@@ -8,6 +8,7 @@ import SleepLog from "./pages/sleeplog/SleepLog";
 import Journal from "./pages/mood/Journal";
 import AudioTherapy from "./pages/audiotherapy/AudioTherapy";
 import LifestyleForm from "./pages/lifestyle/LifeStyle";
+import RoutineOptimizer from "./pages/routine/RoutineOptimizer";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { UserDataProvider } from "./context/UserDataContext";
 import { Toaster } from "sonner";
@@ -36,15 +37,7 @@ function App() {
         <Route path="/sleep-log" element={<SleepLog />} />
         <Route path="/lifestyle" element={<LifestyleForm />} />
         <Route path="/journal" element={<Journal />} />
-        <Route
-          path="/routine-optimizer"
-          element={
-            <AppSection
-              title="Routine Optimizer"
-              description="Build and refine a bedtime routine based on your personal signals."
-            />
-          }
-        />
+        <Route path="/routine-optimizer" element={<RoutineOptimizer />} />
         <Route path="/audio-therapy" element={<AudioTherapy />} />
         <Route
           path="/weekly-report"

@@ -20,7 +20,7 @@ Output : Personalised Intervention Plan JSON  →  §5.5 Final System Output
 """
 
 from crewai import Agent
-from config import AGENT_LLM, AGENT_VERBOSE
+from ..config import AGENT_LLM, AGENT_VERBOSE
 
 
 # ─────────────────────────────────────────────────────────────────────────────

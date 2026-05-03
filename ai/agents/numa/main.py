@@ -13,9 +13,9 @@ Your backend colleague calls analyze_user(user_data) — that's the interface.
 
 import json
 import logging
-import os
-import sys
 from datetime import datetime, timezone
+from .model_loader import run_all_models
+from .crew import run_pipeline
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,29 +24,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-if not os.getenv("OPENAI_API_KEY"):
-    logger.error("OPENAI_API_KEY not set. Run: export OPENAI_API_KEY='sk-...'")
-    sys.exit(1)
-
-from model_loader import run_all_models
-from crew import run_pipeline
-
 
 # ── Sample user data (replace with real frontend payload) ─────────────────────
 SAMPLE_USER_DATA = {
     "user_id": "user-001",
 
     # §5.2.1 — Sleep log data (§3.1.1): hours, quality, patterns
-    "sleep_features": {
-        "Age":             28,
-        "Gender":          1,        # 1=Male, 0=Female (match your encoding)
-        "BMI":             23.5,
-        "PhysicalActivity": 2,       # days/week
-        "SleepDuration":   5.2,      # hours
-        "QualityOfSleep":  3,        # 1-10 scale
-        "HeartRate":       78,
-        "DailySteps":      4200,
-    },
+   "sleep_features": {
+        "Total_sleep_time(hour)": 5.2,
+        "Satisfaction_of_sleep": 3,
+        "Late_night_sleep": 1,
+        "Wakeup_frequently_during_sleep": 1,
+        "Sleep_at_daytime": 0,
+        "Drowsiness_tiredness": 1,
+        "Duration_of_this_problems(years)": 2,
+        "Recent_psychological_attack": 1,
+        "Afraid_of_getting_asleep": 1,
+        },
 
     # §5.2.2 — Lifestyle log data (§3.1.2): routines, habits, diet
     "lifestyle_features": {

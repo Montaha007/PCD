@@ -45,6 +45,110 @@ function hasPredictionResult(entry) {
   return true;
 }
 
+// ── Markdown renderer ──────────────────────────────────────────────────────
+
+function parseInline(text, baseKey) {
+  // Handles **bold**, *italic*, `code`
+  const re = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
+  const parts = [];
+  let last = 0, m, i = 0;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(text.slice(last, m.index));
+    if (m[2]) parts.push(<strong key={`${baseKey}-s${i}`}>{m[2]}</strong>);
+    else if (m[3]) parts.push(<em key={`${baseKey}-e${i}`}>{m[3]}</em>);
+    else if (m[4]) parts.push(<code key={`${baseKey}-c${i}`} className="jmd-code">{m[4]}</code>);
+    last = m.index + m[0].length;
+    i++;
+  }
+  if (last < text.length) parts.push(text.slice(last));
+  return parts;
+}
+
+function MarkdownBlock({ text }) {
+  if (!text) return null;
+  // Split into blocks by blank lines
+  const blocks = text.split(/\n{2,}/);
+
+  return blocks.map((block, bi) => {
+    const trimmed = block.trim();
+    if (!trimmed) return null;
+
+    // Heading: ## text
+    const hMatch = trimmed.match(/^(#{1,3})\s+(.+)$/);
+    if (hMatch) {
+      const depth = hMatch[1].length;
+      const Tag   = depth === 1 ? 'h4' : depth === 2 ? 'h5' : 'h6';
+      return <Tag key={bi} className="jmd-heading">{parseInline(hMatch[2], `${bi}h`)}</Tag>;
+    }
+
+    // Unordered list
+    const lines    = trimmed.split('\n');
+    const isUL     = lines.every(l => /^[-*]\s/.test(l) || !l.trim());
+    const isOL     = lines.every(l => /^\d+[.)]\s/.test(l) || !l.trim());
+
+    if (isUL && lines.some(l => /^[-*]\s/.test(l))) {
+      return (
+        <ul key={bi} className="jmd-list">
+          {lines.filter(l => l.trim()).map((l, li) => (
+            <li key={li}>{parseInline(l.replace(/^[-*]\s+/, ''), `${bi}ul${li}`)}</li>
+          ))}
+        </ul>
+      );
+    }
+
+    if (isOL && lines.some(l => /^\d+[.)]\s/.test(l))) {
+      return (
+        <ol key={bi} className="jmd-list jmd-list--ol">
+          {lines.filter(l => l.trim()).map((l, li) => (
+            <li key={li}>{parseInline(l.replace(/^\d+[.)]\s+/, ''), `${bi}ol${li}`)}</li>
+          ))}
+        </ol>
+      );
+    }
+
+    // Regular paragraph — preserve single line-breaks inside block
+    const content = lines.flatMap((line, li) =>
+      li < lines.length - 1
+        ? [...parseInline(line, `${bi}p${li}`), <br key={`${bi}br${li}`} />]
+        : parseInline(line, `${bi}p${li}`)
+    );
+    return <p key={bi} className="jmd-para">{content}</p>;
+  });
+}
+
+// ── Collapsible analysis display ───────────────────────────────────────────
+
+const COLLAPSE_THRESHOLD = 480; // chars before we offer collapse
+
+function AnalysisDisplay({ text, variant = 'inline' }) {
+  const isLong             = (text?.length ?? 0) > COLLAPSE_THRESHOLD;
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className={`jmd-wrap jmd-wrap--${variant}`}>
+      <div className={`jmd-content ${isLong && !expanded ? 'jmd-content--collapsed' : ''}`}
+      >
+        <MarkdownBlock text={text} />
+      </div>
+
+      {isLong && (
+        <button
+          type="button"
+          className="jmd-toggle"
+          onClick={() => setExpanded(v => !v)}
+        >
+          {expanded
+            ? <><ChevronDown size={13} className="jmd-toggle-icon jmd-toggle-icon--up" /> Show less</>
+            : <><ChevronDown size={13} className="jmd-toggle-icon" /> Read more</>
+          }
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+
 export default function Journal() {
   const [content, setContent]           = useState('');
   const [isFocused, setIsFocused]       = useState(false);
@@ -257,10 +361,13 @@ export default function Journal() {
                             >
                               <p className="journal-entry-content">{entry.content}</p>
                               {entry.analysis_text && (
-                                <p className="journal-analysis-text">
-                                  <Sparkles size={13} strokeWidth={1.8} style={{ flexShrink: 0, marginTop: 2 }} />
-                                  {entry.analysis_text}
-                                </p>
+                                <div className="journal-analysis-block">
+                                  <div className="journal-analysis-header">
+                                    <Sparkles size={13} strokeWidth={1.8} />
+                                    AI Analysis
+                                  </div>
+                                  <AnalysisDisplay text={entry.analysis_text} variant="inline" />
+                                </div>
                               )}
                             </motion.div>
                           )}
@@ -317,7 +424,7 @@ export default function Journal() {
                 </div>
 
                 {modal.analysis && (
-                  <p className="journal-modal-analysis">{modal.analysis}</p>
+                  <AnalysisDisplay text={modal.analysis} variant="modal" />
                 )}
 
                 <Button className="journal-modal-btn" onClick={() => setModal(null)}>

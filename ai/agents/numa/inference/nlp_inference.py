@@ -14,7 +14,7 @@ Output : dict → consumed by model_loader → passed to Correlation Agent
 
 import os
 from collections import Counter, defaultdict
-from config import (
+from ..config import (
     QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION,
     NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD
 )

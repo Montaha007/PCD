@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '../../components/GlassCard';
 import AppSidebar from '../../components/AppSidebar';
 import FloatingStars from '../../components/FloatingStars';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Moon, Activity, BookOpen, AlertTriangle, Sparkles, Coffee,
   Smartphone, CheckCircle, Circle, TrendingUp, TrendingDown, Clock,
+  Brain, Zap, ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import './Dashboard.css';
@@ -382,6 +383,207 @@ function LifestyleBarChart({ data }) {
         })}
       </svg>
     </div>
+  );
+}
+
+// ── Numa Wellness Panel ────────────────────────────────────────────────────
+
+function useWellnessAnalysis(sleepLogId) {
+  const [data,    setData]    = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState(null);
+
+  useEffect(() => {
+    if (!sleepLogId) return;
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    const token = localStorage.getItem('access_token');
+    const headers = { Authorization: `Bearer ${token}` };
+
+    const fetchCached = () => fetch(
+      `${API_BASE}/api/sleeplog/${sleepLogId}/wellness-analysis/`,
+      { method: 'GET', headers },
+    );
+
+    const runAnalysis = () => fetch(
+      `${API_BASE}/api/sleeplog/${sleepLogId}/wellness-analysis/`,
+      { method: 'POST', headers },
+    );
+
+    fetchCached()
+      .then(r => r.json())
+      .then(json => {
+        if (cancelled) return;
+        if (json.success) {
+          setData(json.data);
+          return null;
+        }
+        return runAnalysis();
+      })
+      .then(r => (r ? r.json() : null))
+      .then(json => {
+        if (!json || cancelled) return;
+        if (json.success) setData(json.data);
+        else setError(json.error || 'Analysis failed.');
+      })
+      .catch(() => { if (!cancelled) setError('Could not reach the analysis endpoint.'); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
+  }, [sleepLogId]);
+
+  return { data, loading, error };
+}
+
+function NumaPanel({ sleepLogId }) {
+  const { data, loading, error } = useWellnessAnalysis(sleepLogId);
+  const [expanded, setExpanded] = useState(false);
+
+  if (!sleepLogId) return null;
+
+  if (loading) {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <GlassCard>
+          <div className="dash-numa-header">
+            <Brain size={16} className="dash-card-icon" />
+            <h3 className="dash-card-title dash-card-title--icon" style={{ margin: 0 }}>
+              Numa AI Analysis
+            </h3>
+            <span className="dash-numa-badge dash-numa-badge--loading">Running…</span>
+          </div>
+          <p className="dash-empty" style={{ marginTop: 10 }}>
+            The three-agent pipeline is reasoning about your data…
+          </p>
+        </GlassCard>
+      </motion.div>
+    );
+  }
+
+  if (error) {
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+        <GlassCard>
+          <div className="dash-numa-header">
+            <Brain size={16} className="dash-card-icon" />
+            <h3 className="dash-card-title dash-card-title--icon" style={{ margin: 0 }}>
+              Numa AI Analysis
+            </h3>
+            <span className="dash-numa-badge dash-numa-badge--error">Unavailable</span>
+          </div>
+          <p className="dash-empty" style={{ marginTop: 10, color: '#f87171' }}>{error}</p>
+        </GlassCard>
+      </motion.div>
+    );
+  }
+
+  if (!data) return null;
+
+  const finalOutput     = data.final_output     || {};
+  const reasoningReport = data.reasoning_report || {};
+  const unifiedProfile  = data.unified_profile  || {};
+
+  const actionPlan  = finalOutput.action_plan  || {};
+  const shortTerm   = actionPlan.short_term    || [];
+  const actions     = Array.isArray(shortTerm) ? shortTerm : (shortTerm.actions || []);
+  const rootCauses  = reasoningReport.root_causes || finalOutput.cause_breakdown || [];
+  const confidence  = unifiedProfile.overall_confidence ?? finalOutput.plan_confidence ?? null;
+  const diagnosis   = finalOutput.diagnosis    || finalOutput.primary_diagnosis || null;
+  const planSummary = finalOutput.plan_summary || finalOutput.summary || null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.35 }}
+    >
+      <GlassCard>
+        <div
+          className="dash-numa-header"
+          onClick={() => setExpanded(v => !v)}
+          style={{ cursor: 'pointer' }}
+        >
+          <Brain size={16} className="dash-card-icon" />
+          <h3 className="dash-card-title dash-card-title--icon" style={{ margin: 0, flex: 1 }}>
+            Numa AI Analysis
+          </h3>
+          {confidence != null && (
+            <span className="dash-numa-badge">
+              {Math.round(confidence * 100)}% confidence
+            </span>
+          )}
+          {expanded
+            ? <ChevronUp size={16} style={{ color: '#8fa8c8', flexShrink: 0 }} />
+            : <ChevronDown size={16} style={{ color: '#8fa8c8', flexShrink: 0 }} />
+          }
+        </div>
+
+        {/* Always-visible summary */}
+        {diagnosis && (
+          <p className="dash-numa-diagnosis">{diagnosis}</p>
+        )}
+        {planSummary && !expanded && (
+          <p className="dash-numa-summary">{planSummary}</p>
+        )}
+
+        <AnimatePresence>
+          {expanded && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.28 }}
+              style={{ overflow: 'hidden' }}
+            >
+              {/* Root causes */}
+              {rootCauses.length > 0 && (
+                <div className="dash-numa-section">
+                  <p className="dash-numa-section-title">Root Causes</p>
+                  <div className="dash-numa-causes">
+                    {rootCauses.slice(0, 4).map((c, i) => {
+                      const cause = typeof c === 'string' ? c : (c.cause || c.name || JSON.stringify(c));
+                      const rank  = typeof c === 'object' ? c.rank : null;
+                      return (
+                        <div key={i} className={`dash-numa-cause ${rank === 'PRIMARY' ? 'dash-numa-cause--primary' : ''}`}>
+                          <Zap size={12} />
+                          <span>{cause}</span>
+                          {rank && <span className="dash-numa-cause-rank">{rank}</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Short-term actions */}
+              {actions.length > 0 && (
+                <div className="dash-numa-section">
+                  <p className="dash-numa-section-title">Recommended Actions</p>
+                  <ul className="dash-numa-actions">
+                    {actions.slice(0, 5).map((a, i) => (
+                      <li key={i} className="dash-numa-action">
+                        <CheckCircle size={12} style={{ flexShrink: 0, color: '#5dcf8a' }} />
+                        <span>{typeof a === 'string' ? a : (a.action || a.description || JSON.stringify(a))}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Plan summary when expanded */}
+              {planSummary && (
+                <div className="dash-numa-section">
+                  <p className="dash-numa-section-title">Summary</p>
+                  <p className="dash-numa-summary">{planSummary}</p>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </GlassCard>
+    </motion.div>
   );
 }
 
@@ -875,6 +1077,9 @@ export default function Dashboard() {
               </GlassCard>
             </motion.div>
           )}
+
+          {/* Numa AI Analysis */}
+          <NumaPanel sleepLogId={sleepLog?.id} />
 
           {/* Charts */}
           <div className="dash-charts-row">

@@ -11,7 +11,7 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
-from inference import predict_insomnia, predict_sleep_time, predict_mental_state
+from .inference import predict_insomnia, predict_sleep_time, predict_mental_state
 
 logger = logging.getLogger(__name__)
 

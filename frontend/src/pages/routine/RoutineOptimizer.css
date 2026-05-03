@@ -1,0 +1,379 @@
+/* ── Page wrapper ─────────────────────────────────────────────────────── */
+.ro-wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+.ro-chip {
+  display: inline-block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #c7b8ff;
+  margin: 0 0 10px;
+}
+
+.ro-title {
+  margin: 0 0 8px;
+  font-size: clamp(1.55rem, 3vw, 2.1rem);
+  font-weight: 600;
+  color: #f0f5ff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ro-title-icon { color: #c7b8ff; flex-shrink: 0; }
+
+.ro-sub {
+  margin: 0;
+  color: #9bb0cc;
+  line-height: 1.65;
+}
+
+/* ── Section title ───────────────────────────────────────────────────── */
+.ro-section-title {
+  margin: 0 0 14px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #dce8ff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ro-section-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(99,102,241,0.15);
+  border: 1px solid rgba(99,102,241,0.28);
+  color: #a5b4fc;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ro-step-phase {
+  margin: 0 0 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #a5b4fc;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Bedtime card ────────────────────────────────────────────────────── */
+.ro-bedtime-card {
+  background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.10)) !important;
+  border-color: rgba(139,92,246,0.25) !important;
+}
+
+.ro-bedtime-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.ro-bedtime-moon-ring {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(199,184,255,0.12);
+  border: 1px solid rgba(199,184,255,0.22);
+  flex-shrink: 0;
+}
+
+.ro-bedtime-label {
+  margin: 0 0 4px;
+  font-size: 0.82rem;
+  color: #9bb0cc;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.ro-bedtime-time {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #c7b8ff;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.ro-bedtime-sub {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #9bb0cc;
+  line-height: 1.65;
+}
+
+.ro-referral-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.22);
+  color: #fbbf24;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+/* ── Progress / summary card ─────────────────────────────────────────── */
+.ro-summary-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.ro-summary-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(199,184,255,0.10);
+  border: 1px solid rgba(199,184,255,0.18);
+  flex-shrink: 0;
+}
+
+.ro-summary-copy { flex: 1; }
+
+.ro-summary-title {
+  margin: 0 0 3px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #dce8ff;
+}
+
+.ro-summary-sub {
+  margin: 0;
+  font-size: 0.84rem;
+  color: #9bb0cc;
+}
+
+.ro-summary-pct {
+  font-size: 2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.ro-summary-pct span { font-size: 1rem; font-weight: 500; color: #8fa8c8; }
+
+.ro-progress-track {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(100,160,255,0.12);
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.ro-progress-fill { height: 100%; border-radius: 3px; }
+
+.ro-summary-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.ro-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid;
+}
+
+/* ── Steps list ──────────────────────────────────────────────────────── */
+.ro-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ro-step {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(8,14,38,0.88), rgba(6,12,28,0.72));
+  border: 1px solid rgba(100,160,255,0.12);
+  backdrop-filter: blur(20px) saturate(130%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 6px 24px rgba(4,0,16,0.25);
+  transition: box-shadow 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.ro-step::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 50%; height: 50%;
+  background: radial-gradient(ellipse at 100% 0%, rgba(100,160,255,0.05), transparent 65%);
+  pointer-events: none;
+}
+
+.ro-step:hover {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 10px 32px rgba(4,0,16,0.35);
+}
+
+.ro-step-time {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(99,102,241,0.18);
+  border: 1px solid rgba(99,102,241,0.30);
+  color: #a5b4fc;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.ro-step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+
+.ro-step-body { flex: 1; min-width: 0; }
+
+.ro-step-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.ro-step-title {
+  margin: 0;
+  font-size: 0.97rem;
+  font-weight: 700;
+  color: #dce8ff;
+  line-height: 1.35;
+}
+
+.ro-step-desc {
+  margin: 0;
+  font-size: 0.83rem;
+  color: #9bb0cc;
+  line-height: 1.5;
+}
+
+/* ── Status badge ────────────────────────────────────────────────────── */
+.ro-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.12s ease;
+  white-space: nowrap;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.ro-status-badge:hover  { opacity: 0.82; transform: scale(1.03); }
+.ro-status-badge:active { transform: scale(0.97); }
+
+.ro-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Suggestions grid ────────────────────────────────────────────────── */
+.ro-suggestions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 560px) {
+  .ro-suggestions-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (min-width: 800px) {
+  .ro-suggestions-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+.ro-suggestion-card { text-align: center; }
+
+.ro-suggestion-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 1px solid;
+  margin: 0 auto 14px;
+}
+
+.ro-suggestion-title {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #dce8ff;
+}
+
+.ro-suggestion-desc {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #9bb0cc;
+  line-height: 1.6;
+}
+
+/* ── Loading / error state ───────────────────────────────────────────── */
+.ro-state-msg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 24px;
+  border-radius: 14px;
+  background: rgba(100,160,255,0.06);
+  border: 1px solid rgba(100,160,255,0.12);
+  color: #9bb0cc;
+  font-size: 0.88rem;
+}
+
+.ro-state-msg--error {
+  background: rgba(251,100,100,0.07);
+  border-color: rgba(251,100,100,0.18);
+  color: #f0a0a0;
+}
+
+@keyframes ro-spin { to { transform: rotate(360deg); } }
+.ro-spin { animation: ro-spin 1.1s linear infinite; }
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .ro-step { flex-wrap: wrap; gap: 10px; }
+  .ro-step-time { order: -1; }
+  .ro-bedtime-time { font-size: 2.2rem; }
+  .ro-summary-pct { font-size: 1.6rem; }
+}

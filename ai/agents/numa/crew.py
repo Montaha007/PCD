@@ -19,17 +19,17 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from crewai import Crew
 
-from agents import (
+from .agents import (
     build_correlation_agent,    # §5.3.1
     build_reasoning_agent,      # §5.3.2
     build_recommendation_agent, # §5.3.3
 )
-from tasks import (
+from .tasks import (
     build_correlation_task,     # §5.4.2 Task 1
     build_reasoning_task,       # §5.4.2 Task 2
     build_recommendation_task,  # §5.4.2 Task 3
 )
-from config import CREW_VERBOSE
+from .config import CREW_VERBOSE
 
 logger = logging.getLogger(__name__)
 

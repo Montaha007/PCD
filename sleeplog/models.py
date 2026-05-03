@@ -1,5 +1,8 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
+
+from core.models import BaseModel
 
 
 class SleepLog(models.Model):
@@ -38,3 +41,30 @@ class SleepLog(models.Model):
 
     def __str__(self):
         return f"{self.user.email} — {self.sleep_time.date()}"
+
+
+class DailyWellnessAnalysis(BaseModel):
+    """Persisted Numa agent output (one snapshot per user per day)."""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="daily_wellness_analyses",
+    )
+    sleep_log = models.ForeignKey(
+        SleepLog,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="wellness_snapshots",
+    )
+    analysis_date = models.DateField(default=timezone.localdate)
+    result = models.JSONField()
+    summary = models.TextField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ("user", "analysis_date")
+        ordering = ["-analysis_date", "-created_at"]
+
+    def __str__(self):
+        return f"WellnessAnalysis(user={self.user_id}, date={self.analysis_date})"

@@ -14,7 +14,7 @@ import joblib
 import numpy as np
 import pandas as pd
 from sklearn.inspection import permutation_importance
-from config import LIFESTYLE_MODEL_PATH, LIFESTYLE_SCALER_PATH
+from ..config import LIFESTYLE_MODEL_PATH, LIFESTYLE_SCALER_PATH
 
 # ── Lazy-loaded singletons ────────────────────────────────────────────────────
 _model  = None

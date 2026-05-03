@@ -11,12 +11,19 @@ Output : dict → consumed by model_loader → passed to Correlation Agent
 """
 
 import joblib
+import math
 import numpy as np
-from pathlib import Path
+import pandas as pd
 from collections import Counter
-from config import (
-    SLEEP_CLASSIFIER_PATH, SLEEP_SCALER_PATH,
-    QDRANT_URL, QDRANT_API_KEY, QDRANT_COLLECTION
+
+from ai.registry import get_kit
+
+from ..config import (
+    SLEEP_CLASSIFIER_PATH,
+    SLEEP_SCALER_PATH,
+    QDRANT_URL,
+    QDRANT_API_KEY,
+    QDRANT_SLEEP_COLLECTION,
 )
 
 # ── Lazy-loaded singletons ────────────────────────────────────────────────────
@@ -27,8 +34,15 @@ _qdrant     = None
 # §5.2.1 — Feature columns from insomnia_combined_pipeline.ipynb
 # Update this list to match your actual training columns (excluding target)
 SLEEP_FEATURE_ORDER = [
-    "Age", "Gender", "BMI", "PhysicalActivity",
-    "SleepDuration", "QualityOfSleep", "HeartRate", "DailySteps",
+    "Total_sleep_time(hour)",
+    "Satisfaction_of_sleep",
+    "Late_night_sleep",
+    "Wakeup_frequently_during_sleep",
+    "Sleep_at_daytime",
+    "Drowsiness_tiredness",
+    "Duration_of_this_problems(years)",
+    "Recent_psychological_attack",
+    "Afraid_of_getting_asleep",
 ]
 
 # §5.1.3.1 — Qdrant collection name (shared with NLP model)
@@ -56,17 +70,23 @@ def _qdrant_knn_vote(feature_vec: np.ndarray) -> dict:
     if _qdrant is None:
         return {"vote_counts": {}, "vote_confidence": 0.0, "predicted_label": "unknown"}
 
-    # Normalise for Qdrant (MinMax already applied by scaler)
+    # Normalise for Qdrant (MinMax must already be applied by caller)
     query_vec = feature_vec.flatten().tolist()
 
-    hits = _qdrant.query_points(
-        collection_name=QDRANT_COLLECTION,
-        query=query_vec,
-        limit=K_NEIGHBOURS,
-        with_payload=True,
-    ).points
+    try:
+        hits = _qdrant.query_points(
+            collection_name=QDRANT_SLEEP_COLLECTION,
+            query=query_vec,
+            limit=K_NEIGHBOURS,
+            with_payload=True,
+        ).points
+    except Exception:
+        return {"vote_counts": {}, "vote_confidence": 0.0, "predicted_label": "unknown"}
 
-    labels     = [h.payload.get("Disorder", "unknown") for h in hits]
+    labels = [
+        h.payload.get("label", h.payload.get("Disorder", h.payload.get("disorder", "unknown")))
+        for h in hits
+    ]
     vote       = Counter(labels)
     predicted  = vote.most_common(1)[0][0] if vote else "unknown"
     confidence = vote.most_common(1)[0][1] / len(labels) if labels else 0.0
@@ -77,6 +97,13 @@ def _qdrant_knn_vote(feature_vec: np.ndarray) -> dict:
         "predicted_label":  predicted,
     }
 
+
+def _build_qdrant_sleep_vector(encoded: dict) -> list[float]:
+    """Build a 9-dim MinMaxScaled vector for the sleep Qdrant collection."""
+    kit = get_kit("sleep")
+    df = pd.DataFrame([encoded], columns=kit["feature_columns"])
+    scaled = kit["qdrant_scaler"].transform(df)
+    return scaled[0].tolist()
 
 def predict_insomnia(user_features: dict) -> dict:
     """
@@ -97,18 +124,40 @@ def predict_insomnia(user_features: dict) -> dict:
     """
     _load()
 
-    # Build and scale feature vector
-    X = np.array([[user_features.get(col, 0) for col in SLEEP_FEATURE_ORDER]])
+    # Build feature dict in exact training order
+    raw = {col: user_features.get(col, 0) for col in SLEEP_FEATURE_ORDER}
+
+    # Apply the same label-encoding rules as the canonical sleep pipeline
+    kit = get_kit("sleep")
+    encoded = dict(raw)
+    for col, encoder in kit.get("label_encoders", {}).items():
+        if col in encoded:
+            encoded[col] = encoder.transform([str(encoded[col])])[0]
+
+    # Model path uses StandardScaler
+    X = np.array([[encoded.get(col, 0) for col in SLEEP_FEATURE_ORDER]], dtype=float)
     X_scaled = _scaler.transform(X)
 
     # §5.2.1 — ML classifier prediction
     prediction  = _classifier.predict(X_scaled)[0]
-    proba       = _classifier.predict_proba(X_scaled)[0]
-    ml_conf     = float(proba.max())
-    insomnia    = bool(int(prediction) == 1)
+    
+    insomnia = bool(int(prediction) == 1)
+
+# Confidence:
+# - use predict_proba if available
+# - else use decision_function magnitude mapped to (0.5..1.0)
+    ml_conf = 0.5
+    if hasattr(_classifier, "predict_proba"):
+        proba = _classifier.predict_proba(X_scaled)[0]
+        ml_conf = float(max(proba))
+    elif hasattr(_classifier, "decision_function"):
+        score = float(_classifier.decision_function(X_scaled)[0])
+        ml_conf = 1.0 / (1.0 + math.exp(-abs(score)))
 
     # §5.1.3.1 — Qdrant kNN confirmation
-    knn = _qdrant_knn_vote(X_scaled)
+    # IMPORTANT: sleep Qdrant collection stores MinMaxScaled 9-dim feature vectors.
+    qdrant_vec = _build_qdrant_sleep_vector(encoded)
+    knn = _qdrant_knn_vote(np.asarray(qdrant_vec, dtype=float))
 
     # Overall confidence = average of ML confidence + kNN vote confidence
     overall_conf = round((ml_conf + knn["vote_confidence"]) / 2, 4)
