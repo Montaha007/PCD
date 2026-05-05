@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import Profile
 
 
-SETUP_STEP_KEYS = ["profile", "sleep", "lifestyle", "journal"]
+SETUP_STEP_KEYS = ["sleep", "lifestyle", "journal"]
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -38,21 +38,19 @@ class ProfileSerializer(serializers.ModelSerializer):
         if cached is not None:
             return cached
 
+        from django.utils import timezone
         from mood.models import JournalEntry
         from sleeplog.models import SleepLog
         from lifestyle.models import LifestyleLog
 
         user = instance.user
+        today = timezone.localdate()
         completed = []
 
-        # Registration + profile data exist and are considered setup complete.
-        if all([user.full_name, user.age, user.gender, user.country, user.email]):
-            completed.append("profile")
-
-        if SleepLog.objects.filter(user=user).exists():
+        if SleepLog.objects.filter(user=user, created_at__date=today).exists():
             completed.append("sleep")
 
-        if LifestyleLog.objects.filter(user=user).exists():
+        if LifestyleLog.objects.filter(user=user, date=today).exists():
             completed.append("lifestyle")
 
         prediction_statuses = [
@@ -65,11 +63,12 @@ class ProfileSerializer(serializers.ModelSerializer):
             JournalEntry.Status.SUICIDAL,
             JournalEntry.Status.PERSONALITY_DISORDER,
         ]
-        has_journal_prediction = JournalEntry.objects.filter(
+        has_journal_today = JournalEntry.objects.filter(
             user=user,
+            created_at__date=today,
             status__in=prediction_statuses,
         ).exclude(predicted_mood__isnull=True).exclude(predicted_mood__exact="").exists()
-        if has_journal_prediction:
+        if has_journal_today:
             completed.append("journal")
 
         setattr(instance, "_setup_completed_steps_cache", completed)

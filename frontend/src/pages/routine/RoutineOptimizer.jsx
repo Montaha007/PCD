@@ -25,10 +25,11 @@ const STEP_STYLES = [
 const SUGGESTION_ICONS = [Heart, Sparkles, Moon, Zap, Wind, BookOpen];
 
 function iconForId(id = '') {
-  if (id.startsWith('SH'))  return Moon;
-  if (id.startsWith('CBT')) return Zap;
-  if (id.startsWith('LA'))  return Heart;
-  if (id.startsWith('CL'))  return AlertTriangle;
+  const s = id.toUpperCase();
+  if (s.includes('SH'))  return Moon;
+  if (s.includes('CBT')) return Zap;
+  if (s.includes('LA'))  return Heart;
+  if (s.includes('CL'))  return AlertTriangle;
   return Clock;
 }
 
@@ -36,15 +37,103 @@ function iconForId(id = '') {
 // Handles both: array of actions OR { duration, phases: [{ interventions }] }
 function normalizeLongTerm(raw) {
   if (!raw) return [];
-  if (Array.isArray(raw)) return raw;
-  if (Array.isArray(raw.phases)) {
-    return raw.phases.flatMap(p =>
-      (p.interventions ?? []).map(a => ({
-        ...a,
-        _phase: `Phase ${p.phase} (${p.weeks}) — ${p.focus}`,
-      }))
+
+  const normalizeText = value => (typeof value === 'string' ? value.trim() : '');
+
+  const normalizeAction = (item, fallbackId, phaseLabel) => {
+    if (typeof item === 'string') {
+      const title = normalizeText(item);
+      if (!title) return null;
+      return { action_id: fallbackId, title, _phase: phaseLabel };
+    }
+
+    if (!item || typeof item !== 'object') return null;
+
+    const title =
+      normalizeText(item.title) ||
+      normalizeText(item.action) ||
+      normalizeText(item.intervention) ||
+      normalizeText(item.recommendation) ||
+      normalizeText(item.name) ||
+      normalizeText(item.goal) ||
+      normalizeText(item.focus) ||
+      normalizeText(item.summary);
+
+    const description =
+      normalizeText(item.description) ||
+      normalizeText(item.details) ||
+      normalizeText(item.instructions) ||
+      normalizeText(item.note) ||
+      normalizeText(item.rationale) ||
+      normalizeText(item.why) ||
+      normalizeText(item.reason);
+
+    const normalized = {
+      ...item,
+      action_id: item.action_id ?? fallbackId,
+      _phase: phaseLabel ?? item._phase,
+    };
+
+    if (title) normalized.title = title;
+    if (description) normalized.description = description;
+
+    return normalized;
+  };
+
+  const normalizePhases = phases =>
+    phases.flatMap((phase, index) => {
+      const phaseNumber = phase?.phase ?? index + 1;
+      const weeks = normalizeText(phase?.weeks) || normalizeText(phase?.duration);
+      const focus =
+        normalizeText(phase?.focus) ||
+        normalizeText(phase?.goal) ||
+        normalizeText(phase?.summary);
+
+      const labelParts = [`Phase ${phaseNumber}`];
+      if (weeks) labelParts.push(`(${weeks})`);
+      if (focus) labelParts.push(`- ${focus}`);
+      const phaseLabel = labelParts.join(' ');
+
+      const interventions = Array.isArray(phase?.interventions)
+        ? phase.interventions
+        : Array.isArray(phase?.actions)
+          ? phase.actions
+          : [];
+
+      if (!interventions.length) {
+        const title = focus || `Phase ${phaseNumber}`;
+        const description =
+          normalizeText(phase?.note) ||
+          normalizeText(phase?.description) ||
+          normalizeText(phase?.details) ||
+          (weeks ? `Weeks ${weeks}` : '');
+        const fallback = normalizeAction(
+          { title, description },
+          `LT-P${phaseNumber}`,
+          phaseLabel
+        );
+        return fallback ? [fallback] : [];
+      }
+
+      return interventions
+        .map((item, i) => normalizeAction(item, `LT-P${phaseNumber}-${i + 1}`, phaseLabel))
+        .filter(Boolean);
+    });
+
+  if (Array.isArray(raw)) {
+    const isPhaseList = raw.some(
+      item => item && typeof item === 'object' && ('phase' in item || 'weeks' in item || 'focus' in item)
     );
+    if (isPhaseList) return normalizePhases(raw);
+    return raw
+      .map((item, i) => normalizeAction(item, `LT-${i + 1}`))
+      .filter(Boolean);
   }
+
+  if (Array.isArray(raw.phases)) {
+    return normalizePhases(raw.phases);
+  }
+
   return [];
 }
 
@@ -162,6 +251,25 @@ function BedtimeCard({ routine }) {
 function StepCard({ step, index, status, onStatusChange }) {
   const style   = STEP_STYLES[index % STEP_STYLES.length];
   const Icon    = iconForId(step.action_id);
+  const stepTitle =
+    step.title ??
+    step.action ??
+    step.intervention ??
+    step.recommendation ??
+    step.name ??
+    step.goal ??
+    step.focus ??
+    step.summary;
+  const quantityFrequency = [step.quantity, step.frequency].filter(Boolean).join(' · ');
+  const stepDescription =
+    step.description ??
+    step.details ??
+    step.instructions ??
+    step.note ??
+    step.rationale ??
+    step.why ??
+    step.reason ??
+    quantityFrequency;
 
   return (
     <motion.div
@@ -186,7 +294,7 @@ function StepCard({ step, index, status, onStatusChange }) {
       {/* body */}
       <div className="ro-step-body">
         <div className="ro-step-top">
-          <h3 className="ro-step-title">{step.action}</h3>
+          <h3 className="ro-step-title">{stepTitle}</h3>
           <StatusBadge
             status={status}
             onClick={() => {
@@ -198,9 +306,9 @@ function StepCard({ step, index, status, onStatusChange }) {
         {step._phase && (
           <p className="ro-step-phase">{step._phase}</p>
         )}
-        {(step.quantity || step.frequency) && (
+        {stepDescription && (
           <p className="ro-step-desc">
-            {[step.quantity, step.frequency].filter(Boolean).join(' · ')}
+            {stepDescription}
           </p>
         )}
       </div>
@@ -296,7 +404,9 @@ export default function RoutineOptimizer() {
   const { routine, loading, error } = useWellnessRoutine();
   const [statusMap, setStatusMap]   = useState({});
 
-  const steps           = routine?.action_plan?.short_term ?? [];
+  const rawShort        = routine?.action_plan?.short_term;
+  const steps           = (Array.isArray(rawShort) ? rawShort : rawShort?.actions ?? [])
+                            .map((a, i) => ({ ...a, action_id: a.action_id ?? `ST-${i}` }));
   const longSteps       = normalizeLongTerm(routine?.action_plan?.long_term);
   const allSteps        = [...steps, ...longSteps];
   const psychoeducation = routine?.psychoeducation ?? [];

@@ -2,7 +2,7 @@ import Landing from "./pages/Landing";
 import Register from "./pages/accounts/Register";
 import Login from "./pages/accounts/Login";
 import Profile from "./pages/profile/Profile";
-import AppSection from "./pages/AppSection";
+import WeeklyReport from "./pages/weeklyreport/WeeklyReport";
 import Dashboard from "./pages/dashboard/Dashboard";
 import SleepLog from "./pages/sleeplog/SleepLog";
 import Journal from "./pages/mood/Journal";
@@ -39,15 +39,7 @@ function App() {
         <Route path="/journal" element={<Journal />} />
         <Route path="/routine-optimizer" element={<RoutineOptimizer />} />
         <Route path="/audio-therapy" element={<AudioTherapy />} />
-        <Route
-          path="/weekly-report"
-          element={
-            <AppSection
-              title="Weekly Report"
-              description="Review your week with summarized trends, wins, and recovery targets."
-            />
-          }
-        />
+        <Route path="/weekly-report" element={<WeeklyReport />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>

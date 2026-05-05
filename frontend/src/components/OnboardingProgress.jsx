@@ -3,14 +3,13 @@ import { useEffect, useMemo, useState } from 'react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
 const STEPS = [
-  { key: 'profile', label: 'Profile' },
   { key: 'sleep', label: 'Sleep' },
   { key: 'lifestyle', label: 'Lifestyle' },
   { key: 'journal', label: 'Journal' },
 ];
 const DEFAULT_PROGRESS = {
-  setup_completed_steps: ['profile'],
-  setup_completed_count: 1,
+  setup_completed_steps: [],
+  setup_completed_count: 0,
   setup_total_steps: STEPS.length,
 };
 

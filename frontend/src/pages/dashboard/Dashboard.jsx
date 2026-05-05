@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Moon, Activity, BookOpen, AlertTriangle, Sparkles, Coffee,
   Smartphone, CheckCircle, Circle, TrendingUp, TrendingDown, Clock,
-  Brain, Zap, ChevronDown, ChevronUp,
+  Brain, Zap, ChevronDown, ChevronUp, Headphones,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import './Dashboard.css';
@@ -42,11 +42,16 @@ function ChartTooltip({ tooltip }) {
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function todayISO() {
-  return new Date().toISOString().split('T')[0];
+  const d = new Date();
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    String(d.getDate()).padStart(2, '0'),
+  ].join('-');
 }
 
 function isToday(dateStr) {
-  return !!dateStr && dateStr.startsWith(todayISO());
+  return !!dateStr && dateStr.slice(0, 10) === todayISO();
 }
 
 function parseDurationToHours(str) {
@@ -68,67 +73,17 @@ function formatDuration(str) {
 }
 
 // ── Sleep Quality Score ────────────────────────────────────────────────────
+// Formula:
+//   baseScore  = min((sleepHours / 7) × 100, 100)   — 7 h = full score
+//   penalty    = 20 if AI predicts insomnia, else 0
+//   finalScore = clamp(baseScore − penalty, 0, 100)
 
-function calcSleepScore({ sleepLog, sleepPrediction, lifestyleLog, lifestylePrediction, journalEntry }) {
-  let score = 50;
+function calcSleepScore({ sleepLog, sleepPrediction }) {
+  const hours     = sleepLog ? parseDurationToHours(sleepLog.calculated_sleep_duration) : 0;
+  const baseScore = Math.min((hours / 7) * 100, 100);
+  const penalty   = sleepPrediction?.prediction === 'insomnia' ? 20 : 0;
 
-  // Insomnia prediction — highest weight factor
-  if (sleepPrediction) {
-    score += sleepPrediction.prediction === 'insomnia' ? -25 : 20;
-  }
-
-  // Sleep duration
-  if (sleepLog?.calculated_sleep_duration) {
-    const h = parseDurationToHours(sleepLog.calculated_sleep_duration);
-    if (h >= 7 && h <= 9)      score += 20;
-    else if (h >= 6 && h < 7)  score += 8;
-    else if (h > 9 && h <= 10) score += 5;
-    else if (h >= 5 && h < 6)  score -= 10;
-    else if (h < 5)            score -= 20;
-    else if (h > 10)           score -= 10;
-  }
-
-  // Sleep quality booleans
-  if (sleepLog) {
-    if (sleepLog.satisfaction_of_sleep)       score += 10;
-    if (sleepLog.late_night_sleep)            score -= 5;
-    if (sleepLog.wake_up_frequently)          score -= 7;
-    if (sleepLog.drowsiness_tiredness)        score -= 10;
-    if (sleepLog.afraid_of_sleeping)          score -= 8;
-    if (sleepLog.recent_psychological_attack) score -= 10;
-    if (sleepLog.sleep_at_daytime)            score -= 5;
-  }
-
-  // Lifestyle raw data
-  if (lifestyleLog) {
-    if (lifestyleLog.CaffeineIntake > 200)    score -= 8;
-    else if (lifestyleLog.CaffeineIntake > 150) score -= 4;
-    if (lifestyleLog.PhoneTime > 4)           score -= 8;
-    else if (lifestyleLog.PhoneTime > 3)      score -= 4;
-    if (lifestyleLog.WorkoutTime >= 1)        score += 8;
-    else if (lifestyleLog.WorkoutTime >= 0.5) score += 4;
-    if (lifestyleLog.RelaxationTime >= 1)     score += 5;
-  }
-
-  // Lifestyle prediction quality label
-  if (lifestylePrediction) {
-    const lbl = lifestylePrediction.quality_label;
-    if (lbl === 'healthy')      score += 8;
-    else if (lbl === 'short')   score -= 5;
-    else if (lbl === 'insufficient') score -= 10;
-    else if (lbl === 'excessive')    score -= 3;
-  }
-
-  // Journal mood
-  if (journalEntry?.predicted_mood) {
-    const mood = journalEntry.predicted_mood.toLowerCase();
-    if (mood === 'normal')                              score += 5;
-    else if (['anxiety', 'stress'].includes(mood))      score -= 5;
-    else if (['depression', 'bipolar'].includes(mood))  score -= 10;
-    else if (mood === 'suicidal')                       score -= 15;
-  }
-
-  return Math.max(0, Math.min(100, Math.round(score)));
+  return Math.round(Math.min(Math.max(baseScore - penalty, 0), 100));
 }
 
 function getScoreMeta(score) {
@@ -437,11 +392,8 @@ function useWellnessAnalysis(sleepLogId) {
   return { data, loading, error };
 }
 
-function NumaPanel({ sleepLogId }) {
-  const { data, loading, error } = useWellnessAnalysis(sleepLogId);
+function NumaPanel({ data, loading, error }) {
   const [expanded, setExpanded] = useState(false);
-
-  if (!sleepLogId) return null;
 
   if (loading) {
     return (
@@ -673,6 +625,9 @@ export default function Dashboard() {
     fetchAll();
   }, []);
 
+  // ── NUMA AI Wellness Analysis (lifted here so recommendations can use it) ─
+  const { data: numaData, loading: numaLoading, error: numaError } = useWellnessAnalysis(sleepLog?.id ?? null);
+
   // ── Step completion ──────────────────────────────────────────────────────
   const STEPS = [
     { key: 'sleep',     label: 'Sleep Log',      icon: Moon,      done: !!sleepLog,     path: '/sleep-log' },
@@ -747,58 +702,85 @@ export default function Dashboard() {
 
   // ── Recommendations ──────────────────────────────────────────────────────
   const getRecs = () => {
-    const recs = [
-      {
+    const recs = [];
+
+    // Extract NUMA AI short-term actions if available
+    const numaActions = (() => {
+      if (!numaData) return [];
+      const shortTerm = numaData.final_output?.action_plan?.short_term || [];
+      return Array.isArray(shortTerm) ? shortTerm : (shortTerm.actions || []);
+    })();
+
+    if (numaActions.length > 0) {
+      // Inject NUMA AI recommended actions (up to 3)
+      numaActions.slice(0, 3).forEach(a => {
+        const text = typeof a === 'string' ? a : (a.action || a.description || '');
+        if (!text) return;
+        recs.push({
+          title: text.length > 72 ? text.slice(0, 69) + '…' : text,
+          desc: 'AI-personalized recommendation based on your health data',
+          icon: CheckCircle,
+          path: '/routine-optimizer',
+          grad: 'linear-gradient(130deg, #0e2d44, #1f5f8a)',
+          isAI: true,
+        });
+      });
+    } else {
+      // Fallback to static recommendations when NUMA data is not yet available
+      recs.push({
         title: 'Routine Optimizer',
         desc: 'Build a personalized bedtime routine based on your daily signals',
         icon: Sparkles,
         path: '/routine-optimizer',
         grad: 'linear-gradient(130deg, #1a3d6e, #4682b4)',
-      },
-      {
-        title: 'Audio Therapy',
-        desc: sleepPrediction?.prediction === 'insomnia'
-          ? 'Therapeutic soundscapes specifically designed to ease insomnia'
-          : 'Curated relaxing sounds for deeper, more restorative sleep',
-        icon: Moon,
-        path: '/audio-therapy',
-        grad: 'linear-gradient(130deg, #1a1060, #5040c0)',
-      },
-    ];
-    if (lifestyleLog?.PhoneTime > 3) {
-      recs.push({
-        title: 'Reduce Screen Time',
-        desc: `${lifestyleLog.PhoneTime}h of screen time detected — aim for under 3h before bed`,
-        icon: Smartphone,
-        path: '/lifestyle',
-        grad: 'linear-gradient(130deg, #0e4060, #0891b2)',
       });
-    } else {
-      recs.push({
-        title: 'Boost Physical Activity',
-        desc: 'Even 30 minutes of light exercise can significantly improve sleep quality',
-        icon: Activity,
-        path: '/lifestyle',
-        grad: 'linear-gradient(130deg, #0e4060, #0891b2)',
-      });
+      if (lifestyleLog?.PhoneTime > 3) {
+        recs.push({
+          title: 'Reduce Screen Time',
+          desc: `${lifestyleLog.PhoneTime}h of screen time detected — aim for under 3h before bed`,
+          icon: Smartphone,
+          path: '/lifestyle',
+          grad: 'linear-gradient(130deg, #0e4060, #0891b2)',
+        });
+      } else {
+        recs.push({
+          title: 'Boost Physical Activity',
+          desc: 'Even 30 minutes of light exercise can significantly improve sleep quality',
+          icon: Activity,
+          path: '/lifestyle',
+          grad: 'linear-gradient(130deg, #0e4060, #0891b2)',
+        });
+      }
+      if (lifestyleLog?.CaffeineIntake > 150) {
+        recs.push({
+          title: 'Cut Caffeine After 2 PM',
+          desc: `${lifestyleLog.CaffeineIntake}mg may delay sleep onset — try cutting intake in the afternoon`,
+          icon: Coffee,
+          path: '/lifestyle',
+          grad: 'linear-gradient(130deg, #3d2200, #a05000)',
+        });
+      } else {
+        recs.push({
+          title: 'Weekly Wellness Report',
+          desc: 'Review your sleep trends, wins, and recovery targets over time',
+          icon: TrendingUp,
+          path: '/weekly-report',
+          grad: 'linear-gradient(130deg, #1a3d6e, #0891b2)',
+        });
+      }
     }
-    if (lifestyleLog?.CaffeineIntake > 150) {
-      recs.push({
-        title: 'Cut Caffeine After 2 PM',
-        desc: `${lifestyleLog.CaffeineIntake}mg may delay sleep onset — try cutting intake in the afternoon`,
-        icon: Coffee,
-        path: '/lifestyle',
-        grad: 'linear-gradient(130deg, #3d2200, #a05000)',
-      });
-    } else {
-      recs.push({
-        title: 'Weekly Wellness Report',
-        desc: 'Review your sleep trends, wins, and recovery targets over time',
-        icon: TrendingUp,
-        path: '/weekly-report',
-        grad: 'linear-gradient(130deg, #1a3d6e, #0891b2)',
-      });
-    }
+
+    // Always include Audio Therapy
+    recs.push({
+      title: 'Listen to Audio Therapy',
+      desc: sleepPrediction?.prediction === 'insomnia'
+        ? 'Therapeutic soundscapes specifically designed to ease insomnia'
+        : 'Curated relaxing sounds for deeper, more restorative sleep',
+      icon: Headphones,
+      path: '/audio-therapy',
+      grad: 'linear-gradient(130deg, #1a1060, #5040c0)',
+    });
+
     return recs;
   };
 
@@ -825,21 +807,22 @@ export default function Dashboard() {
         <FloatingStars />
         <AppSidebar />
         <main className="wellness-content">
-          <motion.div
-            className="dash-wrap"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="dash-header">
-              <span className="dash-chip">Dashboard</span>
-              <h1 className="dash-title">Your Daily Health Snapshot</h1>
-              <p className="dash-sub">
-                Complete all 3 daily logs to unlock your personalized sleep insights.
-              </p>
-            </div>
+          <div className="dash-prefill-shell">
+            <motion.div
+              className="dash-prefill-inner"
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="dash-header" style={{ textAlign: 'center' }}>
+                <span className="dash-chip">Dashboard</span>
+                <h1 className="dash-title">Your Daily Health Snapshot</h1>
+                <p className="dash-sub">
+                  Complete all 3 daily logs to unlock your personalized sleep insights.
+                </p>
+              </div>
 
-            <GlassCard className="dash-checklist-card">
+              <GlassCard className="dash-checklist-card">
               <div className="dash-checklist-top">
                 <div className="dash-checklist-icon-wrap">
                   <Sparkles size={19} />
@@ -893,7 +876,8 @@ export default function Dashboard() {
                 are submitted for today.
               </p>
             </GlassCard>
-          </motion.div>
+            </motion.div>
+          </div>
         </main>
       </div>
     );
@@ -1078,9 +1062,6 @@ export default function Dashboard() {
             </motion.div>
           )}
 
-          {/* Numa AI Analysis */}
-          <NumaPanel sleepLogId={sleepLog?.id} />
-
           {/* Charts */}
           <div className="dash-charts-row">
             <motion.div
@@ -1116,6 +1097,11 @@ export default function Dashboard() {
               </GlassCard>
             </motion.div>
           </div>
+
+          {/* Numa AI Analysis — placed directly before recommendations so its actions feed them */}
+          {sleepLog?.id && (
+            <NumaPanel data={numaData} loading={numaLoading} error={numaError} />
+          )}
 
           {/* Recommendations */}
           <motion.div
